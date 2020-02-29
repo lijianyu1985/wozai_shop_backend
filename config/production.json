@@ -1,0 +1,84 @@
+{
+  "type":"production",
+  "authConfig":{
+    "enabled":true,
+    "secretKey":"abcdefghijklmnopqrstuvwxyz!@#$%^&*()_+",
+    "signOptions" : {
+      "expiresIn": 2592000
+    },
+    "cookieOptions":{
+      "ttl": 2592000,
+      "encoding": "none",
+      "isSecure": false,
+      "isHttpOnly": true,
+      "clearInvalid": false,
+      "strictHeader": true
+    }
+  },
+  "connectConfig": {
+    "host": "0.0.0.0",
+    "port": 80,
+    "routes": {
+      "cors": true
+    },
+    "router": {
+      "isCaseSensitive": false,
+      "stripTrailingSlash": false
+    }
+  },
+  "mongoConfig":{
+    "connections": [
+        {
+          "alias": "wozai-shop",
+          "uri": "mongodb://localhost:27117/wozai-shop",
+            "loadSchemasFrom": [
+                "src/schemas",
+                "!.{md,json}"
+            ],
+            "options": {
+              "autoIndex": false,
+              "bufferCommands": true
+            }
+        }
+    ],
+    "decorations": ["request"]
+  },
+  "goodConfig": {
+    "ops": {
+      "interval": 1000
+    },
+    "reporters": {
+      "file": [{
+          "module": "good-squeeze",
+          "name": "Squeeze",
+          "args": [{
+            "log": "*",
+            "request": "*",
+            "response": "*"
+          }]
+        },
+        {
+          "module": "good-squeeze",
+          "name": "SafeJson",
+          "args": [
+            null,
+            {
+              "separator": ","
+            }
+          ]
+        },
+        {
+          "module": "rotating-file-stream",
+          "args": [
+            "log",
+            {
+              "size": "1000KB",
+              "path": "./logs"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "swaggerSchemes": "https"
+}

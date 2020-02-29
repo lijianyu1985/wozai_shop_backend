@@ -1,0 +1,15 @@
+{
+    "editor.formatOnSave": false,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.tslint": true,
+        "source.fixAll.eslint": true
+    },
+    "eslint.options": {
+        "esversion": 6,
+        "extensions": [".js"]
+    },
+    "eslint.validate": [
+        "javascript"
+    ],
+    "eslint.run": "onSave"
+}

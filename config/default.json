@@ -1,0 +1,97 @@
+{
+  "type": "default",
+  "authConfig": {
+    "enabled": true,
+    "secretKey": "secretKey",
+    "signOptions": {
+      "expiresIn": 2592000
+    },
+    "cookieOptions": {
+      "ttl": 2592000,
+      "encoding": "none",
+      "isSecure": false,
+      "isHttpOnly": true,
+      "clearInvalid": false,
+      "strictHeader": true
+    }
+  },
+  "connectConfig": {
+    "host": "0.0.0.0",
+    "port": 12000,
+    "routes": {
+      "cors": true
+    },
+    "router": {
+      "isCaseSensitive": false,
+      "stripTrailingSlash": false
+    }
+  },
+  "mongoConfig": {
+    "connections": [
+      {
+        "alias": "wozai-shop",
+        "uri": "mongodb://localhost:27117/wozai-shop",
+        "loadSchemasFrom": [
+          "src/schemas",
+          "!.{md,json}"
+        ],
+        "options": {
+          "autoIndex": true,
+          "bufferCommands": true,
+          "useNewUrlParser": true,
+          "autoCreate": true
+        }
+      }
+    ],
+    "decorations": [
+      "request"
+    ]
+  },
+  "goodConfig": {
+    "ops": {
+      "interval": 1000
+    },
+    "reporters": {
+      "myConsoleReporter": [
+        {
+          "module": "@hapi/good-squeeze",
+          "name": "Squeeze",
+          "args": [
+            {
+              "log": "*",
+              "response": "*"
+            }
+          ]
+        },
+        {
+          "module": "@hapi/good-console"
+        },
+        "stdout"
+      ],
+      "file": [
+        {
+          "module": "@hapi/good-squeeze",
+          "name": "Squeeze",
+          "args": [
+            {
+              "log": "*",
+              "request": "*",
+              "response": "*"
+            }
+          ]
+        },
+        {
+          "module": "@hapi/good-squeeze",
+          "name": "SafeJson",
+          "args": [
+            null,
+            {
+              "separator": ","
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "swaggerSchemes": "http"
+}
