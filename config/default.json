@@ -1,7 +1,7 @@
 {
   "type": "default",
   "authConfig": {
-    "enabled": true,
+    "enabled": false,
     "secretKey": "secretKey",
     "signOptions": {
       "expiresIn": 2592000
@@ -30,7 +30,7 @@
     "connections": [
       {
         "alias": "wozai-shop",
-        "uri": "mongodb://localhost:27117/wozai-shop",
+        "uri": "mongodb://localhost:27017/wozai-shop",
         "loadSchemasFrom": [
           "src/schemas",
           "!.{md,json}"

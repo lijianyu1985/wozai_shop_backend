@@ -32,3 +32,21 @@ export function buildMemberCreditHistoryFromOrder(order){
         productTitle: title
     };
 }
+
+export function isJSON(str) {
+    if (typeof str === 'string') {
+        try {
+            const obj = JSON.parse(str);
+            if (typeof obj === 'object' && obj ){
+                return true;
+            }
+            return false;
+
+
+        }
+        catch (e) {
+            console.log('error：' + str + '!!!' + e);
+            return false;
+        }
+    }
+}

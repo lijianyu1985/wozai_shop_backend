@@ -2,12 +2,13 @@ import Config from 'getconfig';
 import Pack from './../package';
 import Hapi from '@hapi/hapi';
 import Boom from '@hapi/boom';
+import Admin from './routes/admin';
 import File from './routes/file';
 import Demo from './routes/demo';
+import Common from './routes/common';
 import Joi from '@hapi/joi';
-import mongoose from 'mongoose';
-import RestHapi from 'rest-hapi';
 import {configAuth} from './utils/auth/auth';
+import {policy} from './utils/auth/rbacPolicy';
 
 const connectionConfig = Config.connectConfig;
 
@@ -32,16 +33,6 @@ server.validator(Joi);
 
 const init = async () => {
     await server.register([
-        {
-            plugin: RestHapi,
-            options: {
-                mongoose,
-                config:{
-                    appTitle: 'My API',
-                    modelPath: 'src/schemas'
-                }
-            }
-        },
         require('@hapi/inert'),
         require('@hapi/vision'),
         require('blipp'),
@@ -67,18 +58,29 @@ const init = async () => {
             plugin: require('@hapi/good'),
             options: Config.goodConfig
         },
+        {
+            plugin: require('hapi-mongoose2'),
+            options: Config.mongoConfig
+        },
         require('./plugins/route-error-handler'),
         {
             plugin: require('hapi-rbac'),
             options: {
+                policy,
+                responseCode: {
+                    onDeny: 403,
+                    onUndetermined: 403
+                }
             }
         }
     ]);
 
     await configAuth(server);
 
+    server.route(Admin);
     server.route(File);
     server.route(Demo);
+    server.route(Common);
 
     server.route({
         method: 'GET',

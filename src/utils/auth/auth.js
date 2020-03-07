@@ -7,7 +7,8 @@ const authConfig = Config.authConfig;
 
 // eslint-disable-next-line require-await
 export async function configAuth(server) {
-    const validate = authConfig.enabled ? validateAccount : () => {
+    const validate = authConfig.enabled ? validateAccount : (decoded, request) => {
+        console.log(decoded);
         return {isValid: true};
     };
     if (!authConfig.enabled){
@@ -42,7 +43,6 @@ export async function configAuth(server) {
 }
 
 export async function validateAccount(decoded, request) {
-    return {isValid: true};
     const {id} = decoded;
     const currentAccount = await request.mongo.models.Account.findById(id);
     if (!currentAccount){

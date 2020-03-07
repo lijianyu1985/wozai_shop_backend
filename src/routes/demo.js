@@ -3,7 +3,6 @@
 
 // joi guide
 // https://github.com/hapijs/joi/blob/v14.3.0/API.md
-import rbacPolicy from '../utils/auth/rbacPolicy';
 
 export default [
     {
@@ -17,9 +16,20 @@ export default [
             tags: ['api', 'material'],
             auth: {
                 scope: ['admin']
-            },
-            plugins: {
-                rbac: rbacPolicy.admin
+            }
+        }
+    },
+    {
+        method: 'POST',
+        path: '/Material/FindAll',
+        handler: function (request, h) {
+            return 'images';
+        },
+        config: {
+            description: '查询所有Material数据',
+            tags: ['api', 'material'],
+            auth: {
+                scope: ['admin']
             }
         }
     },
