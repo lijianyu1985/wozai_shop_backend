@@ -22,6 +22,10 @@ const Coupon = new Schema({
     },
     endDate: {
         type: Schema.Types.Date
+    },
+    archived: {
+        type: Schema.Types.Boolean,
+        default: false
     }
 }, {timestamps: {}});
 

@@ -10,6 +10,26 @@ import Joi from '@hapi/joi';
 export default [
     {
         method: 'GET',
+        path: '/Common/All',
+        handler: handlers.pageQuery,
+        config: {
+            description: '查询所有',
+            tags: ['api', 'common'],
+            auth: {
+                scope: ['admin', 'client']
+            },
+            validate: {
+                query: {
+                    modelName: Joi.string().trim().required(),
+                    query: Joi.string().allow(null).allow(''),
+                    sort: Joi.string().allow(null).allow(''),
+                    selector: Joi.string().trim().allow(null).allow('')
+                }
+            }
+        }
+    },
+    {
+        method: 'GET',
         path: '/Common/Page',
         handler: handlers.pageQuery,
         config: {
@@ -63,8 +83,8 @@ export default [
             validate: {
                 payload: Joi.object().keys({
                     modelName: Joi.string().trim().required(),
-                    data: Joi.string().allow(null).allow(''),
-                    opts: Joi.string().allow(null).allow('')
+                    data: Joi.object().allow(null),
+                    opts: Joi.object().allow(null)
                 }).label('CreateModel')
             }
         }
@@ -83,9 +103,9 @@ export default [
                 payload: Joi.object().keys({
                     modelName: Joi.string().trim().required(),
                     id: jois.CommonJoi.optionalId,
-                    query: Joi.string().allow(null).allow(''),
-                    data: Joi.string().allow(null).allow(''),
-                    opts: Joi.string().allow(null).allow('')
+                    query: Joi.object().allow(null).allow(''),
+                    data: Joi.object().allow(null).allow(''),
+                    opts: Joi.object().allow(null).allow('')
                 }).label('UpdateModel')
             }
         }
@@ -103,8 +123,8 @@ export default [
             validate: {
                 payload: Joi.object().keys({
                     modelName: Joi.string().trim().required(),
-                    id: jois.CommonJoi.optionalId,
-                    query: Joi.string().allow(null).allow('')
+                    ids: Joi.array().items(jois.CommonJoi.optionalId),
+                    query: Joi.object().allow(null).allow('')
                 }).label('RemoveModel')
             }
         }

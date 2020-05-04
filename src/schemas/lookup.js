@@ -10,6 +10,10 @@ const Coupon = new Schema({
     },
     description: {
         type: Schema.Types.String
+    },
+    archived: {
+        type: Schema.Types.Boolean,
+        default: false
     }
 }, {timestamps: {}});
 

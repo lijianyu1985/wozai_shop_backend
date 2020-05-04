@@ -6,6 +6,7 @@ import Admin from './routes/admin';
 import File from './routes/file';
 import Demo from './routes/demo';
 import Common from './routes/common';
+import Commodity from './routes/commodity';
 import Joi from '@hapi/joi';
 import {configAuth} from './utils/auth/auth';
 import {policy} from './utils/auth/rbacPolicy';
@@ -81,6 +82,7 @@ const init = async () => {
     server.route(File);
     server.route(Demo);
     server.route(Common);
+    server.route(Commodity);
 
     server.route({
         method: 'GET',

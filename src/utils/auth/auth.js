@@ -65,8 +65,7 @@ export async function signJwt(staff) {
     const token = await JWT.sign(
         {
             username: staff.username,
-            firstName: staff.firstName,
-            lastName: staff.lastName,
+            name: staff.name,
             role: staff.role,
             scope: staff.scope,
             id: staff._id,

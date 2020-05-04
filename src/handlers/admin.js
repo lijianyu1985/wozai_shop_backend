@@ -3,6 +3,25 @@ import crypto from 'crypto';
 import commonService from '../services/common';
 import {signJwt, decodeToken, verifyToken as verifyTokenUtil} from '../utils/auth/auth';
 
+async function currentUser(request, h){
+    const id = request.auth && request.auth.credentials && request.auth.credentials.id;
+    const admin = await commonService.getById(request.mongo.models.Admin, id, '_id username name role scope');
+    if (!admin) {
+        return {
+            error: errors.admin.adminDoesntExists
+        };
+    }
+    if (admin.archived) {
+        return {
+            error: errors.admin.adminArchived
+        };
+    }
+    return {
+        success: true,
+        admin
+    };
+}
+
 async function signin(request, h) {
     const {username, password} = request.payload;
     const admin = await commonService.getByQuery(request.mongo.models.Admin, {username});
@@ -25,7 +44,7 @@ async function signin(request, h) {
     return {
         success: true,
         token,
-        admin
+        currentAuthority: admin.role
     };
 }
 
@@ -148,6 +167,7 @@ async function unarchive(request, h) {
 
 export default {
     signin,
+    currentUser,
     verifyToken,
     changeRole,
     resetPassword,

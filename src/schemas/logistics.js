@@ -26,11 +26,16 @@ const Coupon = new Schema({
     endDate: {
         type: Schema.Types.Date
     },
-    startAddress:{
+    startAddress: {
         type: Schema.Types.Date
     },
-    endAddress:{
+    endAddress: {
         type: Schema.Types.Date
-    }}, {timestamps: {}});
+    },
+    archived: {
+        type: Schema.Types.Boolean,
+        default: false
+    }
+}, {timestamps: {}});
 
 module.exports = Coupon;

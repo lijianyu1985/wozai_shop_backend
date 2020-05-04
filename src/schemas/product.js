@@ -24,7 +24,11 @@ const Product = new Schema({
             ],
             amount: {type: Schema.Types.String}
         }
-    ]
+    ],
+    archived: {
+        type: Schema.Types.Boolean,
+        default: false
+    }
 }, {timestamps: {}});
 
 Product.index({code: 1});

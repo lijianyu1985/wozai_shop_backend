@@ -2,55 +2,39 @@
 // https://mongoosejs.com/docs/validation.html
 const Schema = require('mongoose').Schema;
 
-const Product = new Schema({
-    name: {//名称
+const Sku = new Schema({
+    commodityId: {
+        type: Schema.Types.String,
+        required: true
+    },
+    code: {
         type: Schema.Types.String,
         trim: true,
         required: true
     },
-    code: {//唯一编码
-        type: Schema.Types.String,
-        trim: true,
-        required: true
+    price: {
+        type: Schema.Types.Number,
+        min: 0,
+        default: 0
     },
-    categoryId: {//分类Id
-        type: Schema.Types.String,
-        trim: true,
-        required: true
-    },
-    photos: {//照片
-        type: [Schema.Types.String],
-        required: false
-    },
-    brand: {//品牌
-        type: Schema.Types.String,
-        trim: true,
-        required: true
-    },
-    description: {//详情
-        type: Schema.Types.String,
-        required: false
+    amount: {
+        type: Schema.Types.Number,
+        min: 0,
+        default: 0
     },
     subdivide:
-    [
-        {
-            kind: {type: Schema.Types.String},
-            valueList: [
-                {
-                    name: {type: Schema.Types.String}
-                }
-            ]
-        }
-    ],
-    details: //詳細信息。記錄型號重量規格等
-    [
-        {
-            title: {type: Schema.Types.String},
-            value: {type: Schema.Types.String}
-        }
-    ]
+        [
+            {
+                kind: {type: Schema.Types.String},
+                value: {type: Schema.Types.String}
+            }
+        ],
+    archived: {
+        type: Schema.Types.Boolean,
+        default: false
+    }
 }, {timestamps: {}});
 
-Product.index({code: 1});
+Sku.index({code: 1});
 
-module.exports = Product;
+module.exports = Sku;

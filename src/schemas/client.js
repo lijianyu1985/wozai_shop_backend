@@ -28,6 +28,10 @@ const Client = new Schema({
     },
     name:{
         type: Schema.Types.String
+    },
+    archived: {
+        type: Schema.Types.Boolean,
+        default: false
     }
 }, {timestamps: {}});
 

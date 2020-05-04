@@ -10,6 +10,10 @@ const Category = new Schema({
     },
     icon:{
         type: Schema.Types.String
+    },
+    archived: {
+        type: Schema.Types.Boolean,
+        default: false
     }
 }, {timestamps: {}});
 

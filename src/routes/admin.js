@@ -25,6 +25,18 @@ export default [
         }
     },
     {
+        method: 'GET',
+        path: '/Admin/CurrentUser',
+        handler: handlers.currentUser,
+        config: {
+            description: '获取登录人信息',
+            tags: ['api', 'admin'],
+            auth: {
+                scope: 'admin'
+            }
+        }
+    },
+    {
         method: 'POST',
         path: '/Admin/VerifyToken',
         handler: handlers.verifyToken,

@@ -14,6 +14,18 @@ const Admin = new Schema({
     },
     name:{
         type: Schema.Types.String
+    },
+    scope:{
+        type: Schema.Types.String,
+        default: 'admin'
+    },
+    fingerPrint:{
+        type: Schema.Types.Number,
+        default: 0
+    },
+    archived: {
+        type: Schema.Types.Boolean,
+        default: false
     }
 }, {timestamps: {}});
 

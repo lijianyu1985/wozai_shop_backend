@@ -4,7 +4,7 @@ prefix    target
 00        common
 10        file
 11        client
-
+12        commodity
 
 */
 
@@ -88,6 +88,12 @@ export default {
         clientAlreadyExists: {
             code: '1101',
             msg: '账户已经存在'
+        }
+    },
+    commodity:{
+        codeAlreadyUsed:{
+            code: '1201',
+            msg: '商品编码已经被使用'
         }
     }
 };
