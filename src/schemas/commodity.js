@@ -1,6 +1,7 @@
 // https://mongoosejs.com/docs/schematypes.html
 // https://mongoosejs.com/docs/validation.html
 const Schema = require('mongoose').Schema;
+import {commodityStatus, commodityStatusMap} from '../utils/const';
 
 const Commodity = new Schema({
     name: {//名称
@@ -35,20 +36,28 @@ const Commodity = new Schema({
     description: {//详情
         type: Schema.Types.String
     },
+    status: {
+        type: Schema.Types.String,
+        default: commodityStatusMap.preOnline,
+        enum: [...commodityStatus]
+    },
+    copyFrom: {
+        type: Schema.Types.String
+    },
     subdivide:
-    [
-        {
-            kind: {type: Schema.Types.String},
-            valueList: [Schema.Types.String]
-        }
-    ],
+        [
+            {
+                kind: {type: Schema.Types.String},
+                valueList: [Schema.Types.String]
+            }
+        ],
     details: //詳細信息。記錄型號重量規格等
-    [
-        {
-            title: {type: Schema.Types.String},
-            value: {type: Schema.Types.String}
-        }
-    ],
+        [
+            {
+                title: {type: Schema.Types.String},
+                value: {type: Schema.Types.String}
+            }
+        ],
     archived: {
         type: Schema.Types.Boolean,
         default: false

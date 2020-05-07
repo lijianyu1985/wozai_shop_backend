@@ -94,6 +94,26 @@ export default {
         codeAlreadyUsed:{
             code: '1201',
             msg: '商品编码已经被使用'
+        },
+        notExisting:{
+            code: '1202',
+            msg: '商品不存在'
+        },
+        statusNotAllowEditing:{
+            code: '1203',
+            msg: '当前状态不允许编辑'
+        },
+        statusNotAllowPublish:{
+            code: '1204',
+            msg: '当前状态不允许上线'
+        },
+        statusNotAllowWithdraw:{
+            code: '1205',
+            msg: '当前状态不允许下线'
+        },
+        statusNotAllowDiscard:{
+            code: '1206',
+            msg: '当前状态不允许废弃'
         }
     }
 };

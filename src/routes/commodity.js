@@ -91,5 +91,73 @@ export default [
                 }).label('UpdateSkus')
             }
         }
+    },
+    {
+        method: 'POST',
+        path: '/Commodity/Publish',
+        handler: handlers.publish,
+        config: {
+            description: '上线',
+            tags: ['api', 'commodity'],
+            auth: {
+                scope: ['admin']
+            },
+            validate: {
+                payload: Joi.object().keys({
+                    id: jois.CommonJoi.id
+                }).label('Publish')
+            }
+        }
+    },
+    {
+        method: 'POST',
+        path: '/Commodity/Withdraw',
+        handler: handlers.withdraw,
+        config: {
+            description: '下线',
+            tags: ['api', 'commodity'],
+            auth: {
+                scope: ['admin']
+            },
+            validate: {
+                payload: Joi.object().keys({
+                    id: jois.CommonJoi.id
+                }).label('Withdraw')
+            }
+        }
+    },
+    {
+        method: 'POST',
+        path: '/Commodity/Discard',
+        handler: handlers.discard,
+        config: {
+            description: '废弃',
+            tags: ['api', 'commodity'],
+            auth: {
+                scope: ['admin']
+            },
+            validate: {
+                payload: Joi.object().keys({
+                    id: jois.CommonJoi.id
+                }).label('Discard')
+            }
+        }
+    },
+    {
+        method: 'POST',
+        path: '/Commodity/Copy',
+        handler: handlers.copy,
+        config: {
+            description: '复制',
+            tags: ['api', 'commodity'],
+            auth: {
+                scope: ['admin']
+            },
+            validate: {
+                payload: Joi.object().keys({
+                    id: jois.CommonJoi.id
+                }).label('Copy')
+            }
+        }
     }
 ];

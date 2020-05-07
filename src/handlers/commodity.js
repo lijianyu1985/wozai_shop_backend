@@ -4,6 +4,7 @@ import counterService from './../services/counter';
 import commonSerivice from './../services/common';
 import errors from '../utils/errors';
 import lodash from 'lodash';
+import {commodityStatusMap} from '../utils/const';
 
 function buildSkus(subdivide) {
     if (subdivide && subdivide.length === 1) {
@@ -90,7 +91,23 @@ async function updateBasic(request, h) {
     const {id, name, brand, categoryId, photos, coverPhotos, description, subdivide} = request.payload;
     const Commodity = request.mongo.models.Commodity;
     const Sku = request.mongo.models.Sku;
+    const current = await commonSerivice.getById(Commodity, id);
+    if (!current) {
+        return {
+            success: false,
+            error: errors.commodity.notExisting
+        };
+    }
+
+    if (current.status !== commodityStatusMap.preOnline) {
+        return {
+            success: false,
+            error: errors.commodity.statusNotAllowEditing
+        };
+    }
+
     const model = await Commodity.findByIdAndUpdate(id, {name, brand, categoryId, photos, coverPhotos, description, subdivide}, {new: true});
+
     // clear skus
     await Sku.deleteMany({
         commodityId: id
@@ -108,7 +125,7 @@ async function skuDetails(request, h) {
     const {id} = request.query;
     const Commodity = request.mongo.models.Commodity;
     const Sku = request.mongo.models.Sku;
-    const commodity = await Commodity.findById(id, '_id name code subdivide');
+    const commodity = await Commodity.findById(id, '_id name code subdivide status');
     const skus = await Sku.find({commodityId: id});
     return {
         success: true,
@@ -120,15 +137,30 @@ async function skuDetails(request, h) {
 }
 
 async function updateSkus(request, h) {
-    const {skus} = request.payload;
+    const {id, skus} = request.payload;
+    const Commodity = request.mongo.models.Commodity;
     const Sku = request.mongo.models.Sku;
+    const current = await commonSerivice.getById(Commodity, id);
+    if (!current) {
+        return {
+            success: false,
+            error: errors.commodity.notExisting
+        };
+    }
+
+    if (current.status !== commodityStatusMap.preOnline) {
+        return {
+            success: false,
+            error: errors.commodity.statusNotAllowEditing
+        };
+    }
     await Promise.all(skus.map(async (item) => {
         const currentSku = await Sku.findById(item._id);
         const update = {};
         if (item.amountVariation !== 0
             && item.amountVariation !== null
             && item.amountVariation !== undefined) {
-            if (currentSku.amount + item.amountVariation >= 0){
+            if (currentSku.amount + item.amountVariation >= 0) {
                 update.$inc = {amount: item.amountVariation};
             }
             else {
@@ -145,9 +177,111 @@ async function updateSkus(request, h) {
     };
 }
 
+async function publish(request, h) {
+    const {id} = request.payload;
+    const Commodity = request.mongo.models.Commodity;
+    const current = await commonSerivice.getById(Commodity, id);
+    if (!current) {
+        return {
+            success: false,
+            error: errors.commodity.notExisting
+        };
+    }
+
+    if (current.status !== commodityStatusMap.preOnline) {
+        return {
+            success: false,
+            error: errors.commodity.statusNotAllowPublish
+        };
+    }
+
+    await Commodity.findByIdAndUpdate(id, {status: '已上线'}, {new: true});
+    return {
+        success: true
+    };
+}
+
+async function withdraw(request, h) {
+    const {id} = request.payload;
+    const Commodity = request.mongo.models.Commodity;
+    const current = await commonSerivice.getById(Commodity, id);
+    if (!current) {
+        return {
+            success: false,
+            error: errors.commodity.notExisting
+        };
+    }
+
+    if (current.status !== commodityStatusMap.online) {
+        return {
+            success: false,
+            error: errors.commodity.statusNotAllowWithdraw
+        };
+    }
+    await Commodity.findByIdAndUpdate(id, {status: '已下线'}, {new: true});
+    return {
+        success: true
+    };
+}
+
+async function discard(request, h) {
+    const {id} = request.payload;
+    const Commodity = request.mongo.models.Commodity;
+    const current = await commonSerivice.getById(Commodity, id);
+    if (!current) {
+        return {
+            success: false,
+            error: errors.commodity.notExisting
+        };
+    }
+
+    if (current.status !== commodityStatusMap.preOnline) {
+        return {
+            success: false,
+            error: errors.commodity.statusNotAllowDiscard
+        };
+    }
+    await Commodity.findByIdAndUpdate(id, {status: '禁用'}, {new: true});
+    return {
+        success: true
+    };
+}
+
+async function copy(request, h) {
+    const {id} = request.payload;
+    const Commodity = request.mongo.models.Commodity;
+    const commodity = await Commodity.findById(id);
+
+    const Sku = request.mongo.models.Sku;
+    const code = ('COD' + monthString() + [prefixInteger(await counterService.getNextSeq(request.mongo.models.Counter, 'Commodity' + monthString()), 4)].join(''));
+    const model = new Commodity({
+        copyFrom: commodity._id,
+        name: commodity.name,
+        code,
+        brand: commodity.brand,
+        categoryId: commodity.categoryId,
+        photos: commodity.photos,
+        coverPhotos: commodity.coverPhotos,
+        description: commodity.description,
+        subdivide: commodity.subdivide
+    });
+    await model.save();
+    if (commodity.subdivide && commodity.subdivide.length) {
+        await createSkus(Sku, model._id, code, commodity.subdivide);
+    }
+    return {
+        success: true,
+        data: model
+    };
+}
+
 export default {
     create,
     updateBasic,
     skuDetails,
-    updateSkus
+    updateSkus,
+    publish,
+    withdraw,
+    discard,
+    copy
 };
