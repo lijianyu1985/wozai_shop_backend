@@ -33,7 +33,13 @@ async function signup(request, h){
 
 }
 async function wxSignin(request, h){
-
+    const {code} = request.payload;
+    return {
+        success: true,
+        code,
+        sessionId: 'sessionId',
+        data: {}
+    };
 }
 async function wxSignup(request, h){
 
@@ -98,5 +104,6 @@ async function changePassword(request, h) {
 export default {
     signin,
     verifyToken,
-    changePassword
+    changePassword,
+    wxSignin
 };

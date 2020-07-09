@@ -159,5 +159,39 @@ export default [
                 }).label('Copy')
             }
         }
+    },
+    {
+        method: 'GET',
+        path: '/Commodity/Details',
+        handler: handlers.details,
+        config: {
+            description: '详情',
+            tags: ['api', 'commodity'],
+            auth: {
+                scope: ['admin']
+            },
+            validate: {
+                query: Joi.object().keys({
+                    id: jois.CommonJoi.id
+                }).label('Details')
+            }
+        }
+    },
+    {
+        method: 'GET',
+        path: '/Commodity/WxDetails',
+        handler: handlers.wxDetails,
+        config: {
+            description: '详情微信',
+            tags: ['api', 'commodity'],
+            auth: {
+                scope: ['admin']
+            },
+            validate: {
+                query: Joi.object().keys({
+                    id: jois.CommonJoi.id
+                }).label('WxDetails')
+            }
+        }
     }
 ];

@@ -275,6 +275,70 @@ async function copy(request, h) {
     };
 }
 
+async function details(request, h) {
+    const {id} = request.query;
+    const Commodity = request.mongo.models.Commodity;
+    const commodity = await Commodity.findById(id);
+    return {
+        success: true,
+        data: commodity
+    };
+}
+
+async function wxDetails(request, h) {
+    const {id} = request.query;
+    const Commodity = request.mongo.models.Commodity;
+    const Sku = request.mongo.models.Sku;
+    const commodity = await Commodity.findById(id);
+    const skus = await Sku.find({commodityId: id});
+    const maxPrice = lodash.maxBy(skus, (s) => {
+        return s.price;
+    }).price;
+    const minPrice = lodash.minBy(skus, (s) => {
+        return s.price;
+    }).price;
+    const priceRange = minPrice === maxPrice ? maxPrice : minPrice + ' - ' + maxPrice;
+    return {
+        success: true,
+        commodity,
+        skus,
+        priceRange
+    };
+}
+
+async function categoriesAndFirstCategoryCommodities(request, h) {
+    const Category = request.mongo.models.Category;
+    const Commodity = request.mongo.models.Commodity;
+    const categories = await Category.find({archived: false}, '_id name');
+    const commodities = await Commodity.find({categoryId: categories.length && categories[0]._id, archived: false}, '_id name coverPhotos');
+    return {
+        success: true,
+        categories: (categories || []).map((x) => ({
+            id: x._id,
+            name: x.name
+        })),
+        commodities: (commodities || []).map((x) => ({
+            id: x._id,
+            name: x.name,
+            photo: x.coverPhotos && x.coverPhotos.length && x.coverPhotos[0]
+        }))
+    };
+}
+
+async function commoditiesByCategory(request, h) {
+    const {categoryId} = request.query;
+    const Commodity = request.mongo.models.Commodity;
+    const commodities = await Commodity.find({categoryId, archived: false}, '_id name coverPhotos');
+    return {
+        success: true,
+        commodities: (commodities || []).map((x) => ({
+            id: x._id,
+            name: x.name,
+            photo: x.coverPhotos && x.coverPhotos.length && x.coverPhotos[0]
+        }))
+    };
+}
+
 export default {
     create,
     updateBasic,
@@ -283,5 +347,9 @@ export default {
     publish,
     withdraw,
     discard,
-    copy
+    copy,
+    details,
+    wxDetails,
+    categoriesAndFirstCategoryCommodities,
+    commoditiesByCategory
 };

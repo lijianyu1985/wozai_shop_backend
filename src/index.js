@@ -3,10 +3,12 @@ import Pack from './../package';
 import Hapi from '@hapi/hapi';
 import Boom from '@hapi/boom';
 import Admin from './routes/admin';
+import Client from './routes/client';
 import File from './routes/file';
 import Demo from './routes/demo';
 import Common from './routes/common';
 import Commodity from './routes/commodity';
+import CommodityWx from './routes/commodity.wx';
 import Joi from '@hapi/joi';
 import {configAuth} from './utils/auth/auth';
 import {policy} from './utils/auth/rbacPolicy';
@@ -73,16 +75,24 @@ const init = async () => {
                     onUndetermined: 403
                 }
             }
+        },
+        {
+            plugin: require('./plugins/pre-handler-rule'),
+            options: {
+                rules: require('./handlers/rules').default
+            }
         }
     ]);
 
     await configAuth(server);
 
     server.route(Admin);
+    server.route(Client);
     server.route(File);
     server.route(Demo);
     server.route(Common);
     server.route(Commodity);
+    server.route(CommodityWx);
 
     server.route({
         method: 'GET',

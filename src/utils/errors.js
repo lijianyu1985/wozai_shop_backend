@@ -115,5 +115,11 @@ export default {
             code: '1206',
             msg: '当前状态不允许废弃'
         }
+    },
+    category: {
+        cantDeleteWhenHasReference:{
+            code: '1301',
+            msg: '存在引用，不可以被删除'
+        }
     }
 };
