@@ -8,8 +8,14 @@
     "watch": "nodemon src/index.js --exec babel-node -w src/ --out-dir build/ --source-maps",
     "lint": "eslint src/",
     "lint:write": "eslint --debug src/ --fix",
-    "start:prod": "set NODE_ENV=production&& nodemon dist/index.js",
-    "build": "babel src -d dist --source-maps"
+    "prettier": "prettier --write src/**/*.js",
+    "test": "set NODE_ENV=test&& lab",
+    "start:test": "set NODE_ENV=test&& nodemon dist/app.js --exitcrash",
+    "start:prod": "set NODE_ENV=production&& nodemon dist/app.js -e js",
+    "build": "babel src -d dist --source-maps",
+    "docker:build": "npm run build && docker-compose build",
+    "build:docker": "npm run build && docker-compose -f docker-compose.yml build",
+    "docker": "npm run build && docker-compose -f docker-compose.yml up -d --build"
   },
   "author": "lijianyu",
   "license": "ISC",
