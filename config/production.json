@@ -30,14 +30,18 @@
     "connections": [
         {
           "alias": "wozai-shop",
-          "uri": "mongodb://localhost:27117/wozai-shop",
+          "uri": "mongodb://wozai_mongo:27017/wozai-shop?authSource=admin",
             "loadSchemasFrom": [
                 "src/schemas",
                 "!.{md,json}"
             ],
             "options": {
               "autoIndex": false,
-              "bufferCommands": true
+              "bufferCommands": true,
+              "useNewUrlParser": true,
+              "autoCreate": true,
+              "user": "admin",
+              "pass": "A@a123456"
             }
         }
     ],

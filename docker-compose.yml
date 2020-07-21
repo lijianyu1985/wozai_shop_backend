@@ -1,0 +1,76 @@
+version: '3.2'
+
+services:
+  mongo:
+    image: mongo:4.0.5-xenial
+    container_name: wozai_mongo
+    networks:
+      backend:
+        aliases:
+          - wozai_mongo
+    volumes:
+      - target: /data/db
+        type: volume
+        source: mongo_data
+    ports:
+      - 27217:27017
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: A@a123456
+    command: [--auth]
+  mongo_express:
+    image: mongo-express
+    container_name: wozai_mongo_express
+    networks:
+      backend:
+        aliases:
+          - wozai_mongo_express
+    restart: always
+    depends_on:
+      - mongo
+    ports:
+      - 8281:8081
+    environment:
+      HOST_IP_ADDRESS: 39.107.102.219
+      ME_CONFIG_MONGODB_SERVER: 39.107.102.219
+      ME_CONFIG_MONGODB_PORT: 27217
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: A@a123456
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: A@a123456
+  backend:
+    image: wozai_backend
+    container_name: wozai_backend
+    networks:
+      backend:
+        aliases:
+          - wozai_backend
+    restart: always
+    ports:
+      - 7171:80
+    build:
+      context: .
+      dockerfile: docker/app/Dockerfile
+    environment:
+      TZ: Asia/Shanghai
+      NODE_ENV: production
+    volumes:
+      - target: /usr/src/app/public
+        type: volume
+        source: instance_public
+
+volumes:
+  instance_public:
+    driver: local #for windows: device: c/bbt_test/data/admin/public; for linux device: /var/lib/bbt_test/data/admin/public
+    driver_opts: 
+      o: bind
+      device: /var/lib/wozai/api/public #for windows: device: c/bbt_test/data/admin/public; for linux device: /var/lib/bbt_test/data/admin/public
+  mongo_data:
+    driver: local
+    driver_opts: 
+      o: bind
+      device: /var/lib/wozai/mongo
+networks:
+  backend:
+      
