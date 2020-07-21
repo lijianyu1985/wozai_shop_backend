@@ -65,11 +65,13 @@ volumes:
     driver: local #for windows: device: c/bbt_test/data/admin/public; for linux device: /var/lib/bbt_test/data/admin/public
     driver_opts: 
       o: bind
+      type: none
       device: /var/lib/wozai/api/public #for windows: device: c/bbt_test/data/admin/public; for linux device: /var/lib/bbt_test/data/admin/public
   mongo_data:
     driver: local
     driver_opts: 
       o: bind
+      type: none
       device: /var/lib/wozai/mongo
 networks:
   backend:
