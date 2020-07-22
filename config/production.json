@@ -36,10 +36,10 @@
         {
           "alias": "wozai-shop",
           "uri": "mongodb://wozai_mongo:27017/wozai-shop?authSource=admin",
-            "loadSchemasFrom": [
-                "dist/schemas",
-                "!**/*.{js.map,json,md}"
-            ],
+          "loadSchemasFrom": [
+            "dist/schemas",
+            "!**/*.{js.map,json,md}"
+          ],
             "options": {
               "autoIndex": false,
               "bufferCommands": true,
@@ -58,7 +58,7 @@
     },
     "reporters": {
       "file": [{
-          "module": "good-squeeze",
+          "module": "@hapi/good-squeeze",
           "name": "Squeeze",
           "args": [{
             "log": "*",
@@ -67,7 +67,7 @@
           }]
         },
         {
-          "module": "good-squeeze",
+          "module": "@hapi/good-squeeze",
           "name": "SafeJson",
           "args": [
             null,
