@@ -45,13 +45,12 @@ const Commodity = new Schema({
     copyFrom: {
         type: Schema.Types.String
     },
-    subdivide:
-        [
-            {
-                kind: {type: Schema.Types.String},
-                valueList: [Schema.Types.String]
-            }
-        ],
+    subdivide: [
+        {
+            kind: {type: Schema.Types.String},
+            valueList: [Schema.Types.String]
+        }
+    ],
     details: //詳細信息。記錄型號重量規格等
         [
             {
