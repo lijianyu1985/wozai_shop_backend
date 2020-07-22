@@ -1,4 +1,4 @@
-FROM node:10.15.0-jessie-slim
+FROM node:12.18.2-buster-slim
 WORKDIR /usr/src/app
 COPY ["package.json", "package-lock.json*", "./"]
 RUN npm install --production --silent

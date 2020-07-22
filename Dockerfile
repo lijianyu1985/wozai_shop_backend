@@ -1,4 +1,4 @@
-FROM node:10.13-alpine
+FROM node:12.18.2-alpine3.9
 WORKDIR /usr/src/app
 COPY ["package.json", "package-lock.json*", "./"]
 RUN npm install --production --silent
