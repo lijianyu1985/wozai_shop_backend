@@ -1,7 +1,8 @@
 // https://mongoosejs.com/docs/schematypes.html
 // https://mongoosejs.com/docs/validation.html
 const Schema = require('mongoose').Schema;
-import {commodityStatus, commodityStatusMap} from '../utils/const';
+const commodityStatus = require('../utils/const').commodityStatus;
+const commodityStatusMap = require('../utils/const').commodityStatusMap;
 
 const Commodity = new Schema({
     name: {//名称
