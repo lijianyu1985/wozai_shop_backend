@@ -1,4 +1,5 @@
 {
+  "baseUrl":"http://39.107.102.219/:7171/",
   "type":"production",
   "authConfig":{
     "enabled":true,
@@ -19,7 +20,11 @@
     "host": "0.0.0.0",
     "port": 80,
     "routes": {
-      "cors": true
+      "cors": {
+        "origin": ["*"],
+        "credentials": true,
+        "additionalHeaders": ["Cache-Control", "X-Requested-With"]
+      }
     },
     "router": {
       "isCaseSensitive": false,
@@ -32,8 +37,8 @@
           "alias": "wozai-shop",
           "uri": "mongodb://wozai_mongo:27017/wozai-shop?authSource=admin",
             "loadSchemasFrom": [
-                "src/schemas",
-                "!.{md,json}"
+                "dist/schemas",
+                "!**/*.{js.map,json,md}"
             ],
             "options": {
               "autoIndex": false,
