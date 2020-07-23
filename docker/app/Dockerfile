@@ -1,4 +1,4 @@
-FROM node:12.18.2-buster-slim
+FROM node:12.18.2-alpine3.9
 RUN apk add --no-cache git
 WORKDIR /usr/src/app
 COPY ["package.json", "package-lock.json*", "./"]
