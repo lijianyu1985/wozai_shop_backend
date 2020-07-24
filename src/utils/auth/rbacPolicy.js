@@ -7,6 +7,7 @@ const policies = {
         {
             adminmanagement: ['*'],
             adminprofile: ['*'],
+            common: ['*'],
             product: ['page', 'find', 'get']
         },
         policy: {
@@ -23,6 +24,7 @@ const policies = {
         resources:
         {
             adminprofile: ['*'],
+            common: ['*'],
             product: ['page', 'find', 'get']
         },
         policy: {
@@ -39,6 +41,7 @@ const policies = {
         resources:
         {
             adminprofile: ['*'],
+            common: ['*'],
             product: ['*']
         },
         policy: {
@@ -86,11 +89,14 @@ export function policy(request) {
     }
     const resourceKey = buildRouteKey(request);
     const modelAndPath = resourceKey.split('/');
-    const targetPolicy = (policies[request.auth.credentials.role] && lodash.find(policies[request.auth.credentials.role].resources, (resource) => {
-        return resource[modelAndPath[0]]
-            && (resource[modelAndPath[0]].indexOf('*') >= 0
-                || resource[modelAndPath[0]].indexOf(modelAndPath[1]) >= 0);
-    })) || denyPolicy;
+
+    const targetPolicy = (policies[request.auth.credentials.role] && policies[request.auth.credentials.role].resources
+        && (policies[request.auth.credentials.role].resources[modelAndPath[0]]
+            && (policies[request.auth.credentials.role].resources[modelAndPath[0]].indexOf('*') >= 0
+            || policies[request.auth.credentials.role].resources[modelAndPath[0]].indexOf(modelAndPath[1]) >= 0))
+        ? policies[request.auth.credentials.role]
+        : null) || denyPolicy;
+
     return {
         target: [{'credentials:scope': 'admin'}, {'credentials:scope': 'client'}],
         apply: 'permit-overrides',

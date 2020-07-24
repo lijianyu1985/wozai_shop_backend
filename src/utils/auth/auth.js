@@ -8,7 +8,6 @@ const authConfig = Config.authConfig;
 // eslint-disable-next-line require-await
 export async function configAuth(server) {
     const validate = authConfig.enabled ? validateAdmin : (decoded, request) => {
-        console.log(decoded);
         return {isValid: true};
     };
     if (!authConfig.enabled){
