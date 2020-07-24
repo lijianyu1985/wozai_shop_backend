@@ -5,7 +5,8 @@ const policies = [
     {
         resources:
         {
-            admin: ['*'],
+            adminmanagement: ['*'],
+            adminprofile: ['*'],
             product: ['page', 'find', 'get']
         },
         policy: {
@@ -21,6 +22,7 @@ const policies = [
     {
         resources:
         {
+            adminprofile: ['*'],
             product: ['page', 'find', 'get']
         },
         policy: {
@@ -36,6 +38,7 @@ const policies = [
     {
         resources:
         {
+            adminprofile: ['*'],
             product: ['*']
         },
         policy: {

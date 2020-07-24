@@ -2,7 +2,9 @@ import Config from 'getconfig';
 import Pack from './../package';
 import Hapi from '@hapi/hapi';
 import Boom from '@hapi/boom';
-import Admin from './routes/admin';
+import AdminAuth from './routes/adminAuth';
+import AdminManagement from './routes/adminManagement';
+import AdminProfile from './routes/adminProfile';
 import Client from './routes/client';
 import File from './routes/file';
 import Demo from './routes/demo';
@@ -86,7 +88,9 @@ const init = async () => {
 
     await configAuth(server);
 
-    server.route(Admin);
+    server.route(AdminAuth);
+    server.route(AdminManagement);
+    server.route(AdminProfile);
     server.route(Client);
     server.route(File);
     server.route(Demo);

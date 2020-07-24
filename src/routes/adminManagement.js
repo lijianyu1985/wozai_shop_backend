@@ -10,7 +10,7 @@ import Joi from '@hapi/joi';
 export default [
     {
         method: 'POST',
-        path: '/Admin/Signin',
+        path: '/AdminManagement/Signin',
         handler: handlers.signin,
         config: {
             description: '登录',
@@ -25,20 +25,8 @@ export default [
         }
     },
     {
-        method: 'GET',
-        path: '/Admin/CurrentUser',
-        handler: handlers.currentUser,
-        config: {
-            description: '获取登录人信息',
-            tags: ['api', 'admin'],
-            auth: {
-                scope: 'admin'
-            }
-        }
-    },
-    {
         method: 'POST',
-        path: '/Admin/VerifyToken',
+        path: '/AdminManagement/VerifyToken',
         handler: handlers.verifyToken,
         config: {
             description: 'Verify',
@@ -53,7 +41,7 @@ export default [
     },
     {
         method: 'POST',
-        path: '/Admin/DefaultPassword',
+        path: '/AdminManagement/DefaultPassword',
         handler: handlers.defaultPassword,
         config: {
             description: '重置默认密码',
@@ -70,7 +58,7 @@ export default [
     },
     {
         method: 'POST',
-        path: '/Admin/ResetPassword',
+        path: '/AdminManagement/ResetPassword',
         handler: handlers.resetPassword,
         config: {
             description: '重置密码',
@@ -88,7 +76,7 @@ export default [
     },
     {
         method: 'POST',
-        path: '/Admin/ChangePassword',
+        path: '/AdminManagement/ChangePassword',
         handler: handlers.changePassword,
         config: {
             description: '修改密码',
@@ -106,7 +94,7 @@ export default [
     },
     {
         method: 'POST',
-        path: '/Admin/ChangeRole',
+        path: '/AdminManagement/ChangeRole',
         handler: handlers.changeRole,
         config: {
             auth: {
@@ -124,7 +112,7 @@ export default [
     },
     {
         method: 'POST',
-        path: '/Admin/Archive',
+        path: '/AdminManagement/Archive',
         handler: handlers.archive,
         config: {
             auth: {
@@ -141,7 +129,7 @@ export default [
     },
     {
         method: 'POST',
-        path: '/Admin/Unarchive',
+        path: '/AdminManagement/Unarchive',
         handler: handlers.unarchive,
         config: {
             auth: {
