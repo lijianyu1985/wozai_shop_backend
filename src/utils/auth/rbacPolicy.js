@@ -78,6 +78,9 @@ export function policy(request) {
     if (!Config.authConfig.enabled) {
         return undefined;
     }
+    if (!request.route.settings.auth) {
+        return undefined;
+    }
     const resourceKey = buildRouteKey(request);
     const modelAndPath = resourceKey.split('/');
     const targetPolicy = lodash.find(policies, (p) => {

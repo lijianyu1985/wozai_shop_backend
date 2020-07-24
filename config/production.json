@@ -1,5 +1,5 @@
 {
-  "baseUrl":"http://39.107.102.219/:7171/",
+  "baseUrl":"http://39.107.102.219:7171/",
   "type":"production",
   "authConfig":{
     "enabled":true,
@@ -89,5 +89,5 @@
       ]
     }
   },
-  "swaggerSchemes": "https"
+  "swaggerSchemes": "http"
 }

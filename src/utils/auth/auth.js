@@ -7,7 +7,7 @@ const authConfig = Config.authConfig;
 
 // eslint-disable-next-line require-await
 export async function configAuth(server) {
-    const validate = authConfig.enabled ? validateAccount : (decoded, request) => {
+    const validate = authConfig.enabled ? validateAdmin : (decoded, request) => {
         console.log(decoded);
         return {isValid: true};
     };
@@ -42,16 +42,16 @@ export async function configAuth(server) {
     server.auth.default('jwt');
 }
 
-export async function validateAccount(decoded, request) {
+export async function validateAdmin(decoded, request) {
     const {id} = decoded;
-    const currentAccount = await request.mongo.models.Account.findById(id);
-    if (!currentAccount){
+    const currentAdmin = await request.mongo.models.Admin.findById(id);
+    if (!currentAdmin){
         return {isValid: false};
     }
-    if (currentAccount.archived){
+    if (currentAdmin.archived){
         return {isValid: false};
     }
-    if (decoded.authorizationFingerprint !== generateAuthorizationFingerprint(currentAccount)){
+    if (decoded.authorizationFingerprint !== generateAuthorizationFingerprint(currentAdmin)){
         return {isValid: false};
     }
     return {isValid: true};
@@ -89,8 +89,8 @@ export function decodeToken(token) {
 export async function verifyToken(token, request) {
     try {
         const decoded = decodeToken(token);
-        const currentAccount = await request.mongo.models.Account.findById(decoded.id);
-        if ( generateAuthorizationFingerprint(currentAccount) === decoded.authorizationFingerprint){
+        const currentAdmin = await request.mongo.models.Admin.findById(decoded.id);
+        if ( generateAuthorizationFingerprint(currentAdmin) === decoded.authorizationFingerprint){
             return !!decoded;
         }
         return false;

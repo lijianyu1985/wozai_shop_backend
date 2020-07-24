@@ -1,5 +1,4 @@
-FROM node:12.18.2-alpine3.9
-RUN apk add --no-cache git
+FROM node:12.18.2-buster-slim
 WORKDIR /usr/src/app
 COPY ["package.json", "package-lock.json*", "./"]
 RUN npm install --production --silent
