@@ -7,8 +7,7 @@ const policies = {
         {
             adminmanagement: ['*'],
             adminprofile: ['*'],
-            common: ['*'],
-            product: ['page', 'find', 'get']
+            common: ['*']
         },
         policy: {
             target: {'credentials:role': 'super_admin'},
@@ -24,8 +23,7 @@ const policies = {
         resources:
         {
             adminprofile: ['*'],
-            common: ['*'],
-            product: ['page', 'find', 'get']
+            common: ['*']
         },
         policy: {
             target: {'credentials:role': 'admin'},
@@ -42,7 +40,7 @@ const policies = {
         {
             adminprofile: ['*'],
             common: ['*'],
-            product: ['*']
+            commodity: ['*']
         },
         policy: {
             target: {'credentials:role': 'product_admin'},
