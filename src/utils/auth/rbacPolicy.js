@@ -86,10 +86,10 @@ export function policy(request) {
     }
     const resourceKey = buildRouteKey(request);
     const modelAndPath = resourceKey.split('/');
-    const targetPolicy = (policies[request.auth.credentials.role] && lodash.find(policies[request.auth.credentials.role], (p) => {
-        return p.resources[modelAndPath[0]]
-            && (p.resources[modelAndPath[0]].indexOf('*') >= 0
-                || p.resources[modelAndPath[0]].indexOf(modelAndPath[1]) >= 0);
+    const targetPolicy = (policies[request.auth.credentials.role] && lodash.find(policies[request.auth.credentials.role].resources, (resource) => {
+        return resource[modelAndPath[0]]
+            && (resource[modelAndPath[0]].indexOf('*') >= 0
+                || resource[modelAndPath[0]].indexOf(modelAndPath[1]) >= 0);
     })) || denyPolicy;
     return {
         target: [{'credentials:scope': 'admin'}, {'credentials:scope': 'client'}],
