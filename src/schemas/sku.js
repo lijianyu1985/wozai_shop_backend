@@ -4,8 +4,9 @@ const Schema = require('mongoose').Schema;
 
 const Sku = new Schema({
     commodityId: {
-        type: Schema.Types.String,
-        required: true
+        type: Schema.Types.ObjectId,
+        required: true,
+        ref: 'commodity'
     },
     code: {
         type: Schema.Types.String,

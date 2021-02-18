@@ -11,6 +11,7 @@ import Demo from './routes/demo';
 import Common from './routes/common';
 import Commodity from './routes/commodity';
 import CommodityWx from './routes/commodity.wx';
+import MainWx from './routes/main.wx';
 import Joi from '@hapi/joi';
 import {configAuth} from './utils/auth/auth';
 import {policy} from './utils/auth/rbacPolicy';
@@ -97,6 +98,7 @@ const init = async () => {
     server.route(Common);
     server.route(Commodity);
     server.route(CommodityWx);
+    server.route(MainWx);
 
     server.route({
         method: 'GET',
