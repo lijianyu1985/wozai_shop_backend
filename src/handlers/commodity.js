@@ -176,7 +176,7 @@ async function skuDetails(request, h) {
   const Sku = request.mongo.models.Sku;
   const commodity = await Commodity.findById(
     id,
-    "_id name code subdivide status"
+    "_id name code subdivide status archived"
   );
   const skus = await Sku.find({ commodityId: id });
   return {
@@ -210,7 +210,7 @@ async function updateSkus(request, h) {
     await Promise.all(
       skus.map(async (item) => {
         const currentSku = await Sku.findById(item._id);
-        const update = {};
+        const update = {archived: item.archived};
         if (
           item.amountVariation !== 0 &&
           item.amountVariation !== null &&
@@ -427,7 +427,10 @@ async function commoditiesByCategory(request, h) {
     }).price;
     return minPrice === maxPrice ? maxPrice : minPrice + " - " + maxPrice;
   };
-
+  const filterSkus = (skus) => {
+    return skus.filter(x=>!x.archived);
+  };
+  
   return {
     success: true,
     commodities: (commodities || []).map((x) => ({
@@ -435,8 +438,8 @@ async function commoditiesByCategory(request, h) {
       name: x.name,
       photo: x.coverPhotos && x.coverPhotos.length && x.coverPhotos[0],
       subdivide: x.subdivide,
-      skus: x.skus,
-      priceRange: getPriceRange(x.skus),
+      skus: filterSkus(x.skus),
+      priceRange: getPriceRange(filterSkus(x.skus)),
     })),
   };
 }

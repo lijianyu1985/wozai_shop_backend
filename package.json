@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "./node_modules/.bin/babel-node src/index.js",
-    "watch": "nodemon src/index.js --exec babel-node -w src/ --out-dir build/ --source-maps",
+    "dev": "nodemon src/index.js --exec babel-node -w src/ --out-dir build/ --source-maps",
     "lint": "eslint src/",
     "lint:write": "eslint --debug src/ --fix",
     "prettier": "prettier --write src/**/*.js",

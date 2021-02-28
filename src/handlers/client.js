@@ -41,6 +41,51 @@ async function wxSignin(request, h){
         data: {}
     };
 }
+
+async function wxCheckToken (request, h){
+    //call 腾讯接口检查token有效性
+    const {token} = request.payload;
+    return {
+        success: true,
+        token,
+        code:0,
+        sessionId: 'sessionId',
+        data: {}
+    };
+
+}
+async function wxLogin (request, h){
+    //call 腾讯接口login
+    const {code} = request.payload;
+    return {
+        success: true,
+        code:0,
+        sessionId: 'sessionId',
+        data: {code,token:'a',uid:'a'}
+    };
+
+}
+async function wxBasic (request, h){
+    //call 腾讯接口login
+    return {
+        success: true,
+        code:0,
+        data: {
+            addressList:[]
+        }
+    };
+
+}
+async function wxRegisterComplex (request, h){
+    const {code,encryptedData,iv,referrer} = request.payload;
+    return {
+        success: true,
+        code:0,
+        sessionId: 'sessionId',
+        data: {code,encryptedData,iv,referrer}
+    };
+
+}
 async function wxSignup(request, h){
 
 }
@@ -105,5 +150,9 @@ export default {
     signin,
     verifyToken,
     changePassword,
-    wxSignin
+    wxSignin,
+    wxCheckToken,
+    wxRegisterComplex,
+    wxLogin,
+    wxBasic
 };
