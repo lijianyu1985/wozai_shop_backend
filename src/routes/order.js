@@ -8,7 +8,7 @@ import rbacPolicy from '../utils/auth/rbacPolicy';
 export default [
     {
         method: 'GET',
-        path: '/Admin/Find',
+        path: '/Order/Find',
         handler: function (request, h) {
             return 'images';
         },
@@ -25,7 +25,7 @@ export default [
     },
     {
         method: 'POST',
-        path: '/Admin/Create',
+        path: '/Order/Create',
         handler: function (request, h) {
             return 'images';
         },
@@ -36,7 +36,7 @@ export default [
     },
     {
         method: 'POST',
-        path: '/Admin/Update',
+        path: '/Order/Update',
         handler: function (request, h) {
             return 'images';
         },
@@ -47,7 +47,7 @@ export default [
     },
     {
         method: 'DELETE',
-        path: '/Admin/Delete',
+        path: '/Order/Delete',
         handler: function (request, h) {
             return 'images';
         },
@@ -58,7 +58,7 @@ export default [
     },
     {
         method: 'GET',
-        path: '/Admin/Get',
+        path: '/Order/Get',
         handler: function (request, h) {
             return 'images';
         },

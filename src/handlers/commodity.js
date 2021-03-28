@@ -367,7 +367,7 @@ async function wxDetails(request, h) {
     return s.price;
   }).price;
   const priceRange =
-    minPrice === maxPrice ? maxPrice : minPrice + " - " + maxPrice;
+    minPrice === maxPrice ? maxPrice+"" : minPrice + " - " + maxPrice;
   return {
     success: true,
     commodity,

@@ -76,6 +76,21 @@ export async function signJwt(staff) {
     return token;
 }
 
+export async function signWxJwt(client) {
+    const token = await JWT.sign(
+        {
+            wxOpenId: client.wxOpenId,
+            wxNickName: client.wxNickName,
+            wxSessionKey: client.wxSessionKey,
+            scope: 'wx',
+            id: client._id
+        },
+        authConfig.secretKey,
+        authConfig.signOptions
+    );
+    return token;
+}
+
 export function decodeToken(token) {
     try {
         return JWT.verify(token, authConfig.secretKey);

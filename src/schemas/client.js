@@ -8,10 +8,16 @@ const Client = new Schema({
     password: {
         type: Schema.Types.String
     },
-    wxUsername: {
+    wxOpenId: {
         type: Schema.Types.String
     },
-    wxToken: {
+    wxNickName: {
+        type: Schema.Types.String
+    },
+    wxAvatarUrl: {
+        type: Schema.Types.String
+    },
+    wxSessionKey: {
         type: Schema.Types.String
     },
     qqUsername: {

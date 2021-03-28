@@ -2,21 +2,19 @@
 // https://mongoosejs.com/docs/validation.html
 
 const Schema = require('mongoose').Schema;
+const orderStatus = require("../utils/const").orderStatus;
+const orderStatusMap = require("../utils/const").orderStatusMap;
 
-const ProductItem = new Schema({
-    amount:{
+const CommodityItem = new Schema({
+    commodity:{
+        type: Schema.Types.Mixed,
+    },
+    sku:{
+        type: Schema.Types.Mixed,
+    },
+    count:{
         type: Schema.Types.Number,
         min: 1
-    },
-    rate: {
-        price: {
-            type: Schema.Types.Number,
-            min: 0
-        },
-        discount: {
-            type: Schema.Types.Number,
-            min: 0
-        }
     }
 });
 
@@ -26,40 +24,43 @@ const Order = new Schema({
         trim: true,
         required: true
     },
-    clientId: {
-        type: Schema.Types.Mixed
+    address:{
+        type: Schema.Types.Mixed,
     },
-    productItems:[ProductItem],
+    userId: {
+        type: Schema.Types.String
+    },
+    touchedTime: {
+        type: Schema.Types.Date,
+        default: Date.now(),
+    },
+    commodityItems:[CommodityItem],
     rate:{
-        productCost: {
+        commodityCost: {
             type: Schema.Types.Number,
             required: true,
             min: 0
         },
-        payer: {
-            type: Schema.Types.String,
+        shippingFee: {
+            type: Schema.Types.Number,
             trim: true
+        },
+        discount: {
+            type: Schema.Types.Number,
+            default:0,
+            min: 0
+        },
+        total: {
+            type: Schema.Types.Number,
         }
     },
     status: {
-        type: Schema.Types.String
+      type: Schema.Types.String,
+      default: orderStatusMap.Created,
+      enum: [...orderStatus],
     },
     statusHistory: {
         type: Schema.Types.String
-    },
-    isRefunded: {
-        type: Schema.Types.Boolean,
-        default: false
-    },
-    isApplingRefunded: {
-        type: Schema.Types.Boolean,
-        default: false
-    },
-    couponId: {
-        type: Schema.Types.String
-    },
-    couponOff: {
-        type: Schema.Types.Number
     },
     description: {
         type: Schema.Types.String

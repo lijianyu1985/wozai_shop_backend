@@ -47,6 +47,7 @@
     "regenerator-runtime": "^0.13.7",
     "rest-hapi": "^1.9.2",
     "rotating-file-stream": "^1.1.9",
+    "tenpay": "^2.1.18",
     "uuid": "^3.4.0"
   },
   "devDependencies": {

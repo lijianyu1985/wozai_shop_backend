@@ -57,6 +57,11 @@ async function get(request, h) {
 async function create(request, h) {
     const {modelName, data, opts} = request.payload;
     const Model = request.mongo.models[modelName];
+    if(data.default && data.userId){
+        await Model.updateMany({
+            userId:data.userId
+        }, {default:false});
+    }
     const model = new Model(data);
     await model.save(opts);
     return {
@@ -68,6 +73,11 @@ async function create(request, h) {
 async function update(request, h) {
     const {modelName, id, query, data, opts} = request.payload;
     const Model = request.mongo.models[modelName];
+    if(data.default && data.userId){
+        await Model.updateMany({
+            userId:data.userId
+        }, {default:false});
+    }
     let model;
     if (id) {
         model = await Model.findByIdAndUpdate(id, data, opts || {new: true});

@@ -16,7 +16,7 @@ export default [
             description: '查询所有',
             tags: ['api', 'common'],
             auth: {
-                scope: ['admin', 'client']
+                scope: ['admin', 'client','wx']
             },
             validate: {
                 query: {
@@ -36,7 +36,7 @@ export default [
             description: '分页查询',
             tags: ['api', 'common'],
             auth: {
-                scope: ['admin', 'client']
+                scope: ['admin', 'client','wx']
             },
             validate: {
                 query: {
@@ -58,7 +58,7 @@ export default [
             description: '查询',
             tags: ['api', 'common'],
             auth: {
-                scope: ['admin', 'client']
+                scope: ['admin', 'client','wx']
             },
             validate: {
                 query: {
@@ -78,7 +78,7 @@ export default [
             description: '创建',
             tags: ['api', 'common'],
             auth: {
-                scope: ['admin', 'client']
+                scope: ['admin', 'client','wx']
             },
             validate: {
                 payload: Joi.object().keys({
@@ -97,7 +97,7 @@ export default [
             description: '更新',
             tags: ['api', 'common'],
             auth: {
-                scope: ['admin', 'client']
+                scope: ['admin', 'client','wx']
             },
             validate: {
                 payload: Joi.object().keys({
@@ -118,7 +118,7 @@ export default [
             description: '删除',
             tags: ['api', 'common'],
             auth: {
-                scope: ['admin', 'client']
+                scope: ['admin', 'client','wx']
             },
             validate: {
                 payload: Joi.object().keys({
@@ -137,7 +137,7 @@ export default [
             description: '查询单个',
             tags: ['api', 'common'],
             auth: {
-                scope: ['admin', 'client']
+                scope: ['admin', 'client','wx']
             },
             validate: {
                 query: {

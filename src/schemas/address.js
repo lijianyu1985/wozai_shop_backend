@@ -26,6 +26,10 @@ const Address = new Schema({
     userId:{
         type: Schema.Types.String
     },
+    default:{
+        type: Schema.Types.Boolean,
+        default: false
+    },
     archived: {
         type: Schema.Types.Boolean,
         default: false

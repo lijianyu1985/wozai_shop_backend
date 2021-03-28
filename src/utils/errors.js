@@ -5,6 +5,7 @@ prefix    target
 10        file
 11        client
 12        commodity
+13        order
 
 */
 
@@ -88,6 +89,18 @@ export default {
         clientAlreadyExists: {
             code: '1101',
             msg: '账户已经存在'
+        },
+        wxCode2SessionException: {
+            code: '1102',
+            msg: '微信session获取异常'
+        },
+        wxLoginFail: {
+            code: '1103',
+            msg: '微信登录失败'
+        },
+        tokenInvalid: {
+            code: '1104',
+            msg: 'Token验证失败'
         }
     },
     commodity:{
@@ -120,6 +133,24 @@ export default {
         cantDeleteWhenHasReference:{
             code: '1301',
             msg: '存在引用，不可以被删除'
+        }
+    },
+    order:{
+        skuAmountNotEnough:{
+            code: '1301',
+            msg: '当前产品库存不够'
+        },
+        noOrderBeFound:{
+            code: '1302',
+            msg: '没有找到订单'
+        },
+        noCreatedOrderBeFound:{
+            code: '1303',
+            msg: '没有已创建订单'
+        },
+        wxPrePayException:{
+            code: '1304',
+            msg: '微信预支付异常'
         }
     }
 };
