@@ -2,7 +2,7 @@ version: '3.2'
 
 services:
   mongo:
-    image: mongo:4.0.5-xenial
+    image: mongo:latest
     container_name: wozai_mongo
     networks:
       backend:
