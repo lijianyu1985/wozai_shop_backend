@@ -7,5 +7,6 @@ COPY assist/ /usr/src/app/assist/
 COPY config/ /usr/src/app/config/
 COPY dist/ /usr/src/app/dist/
 COPY public/ /usr/src/app/public/
+COPY cert/ /usr/src/app/cert/
 EXPOSE 80
 CMD npm run start:prod
