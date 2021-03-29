@@ -43,7 +43,7 @@ async function wxCheckToken(request, h) {
     request.mongo.models.Client,
     decoded.id
   );
-  if (!client) {
+  if (!client || client.wxSessionKey !== decoded.wxSessionKey) {
     return {
       error: errors.client.tokenInvalid,
     };
