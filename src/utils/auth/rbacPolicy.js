@@ -96,11 +96,20 @@ export function policy(request) {
         : null) || denyPolicy;
 
     return {
-        target: [{'credentials:scope': 'admin'}, {'credentials:scope': 'client'}],
+        target: [{'credentials:scope': 'admin'}, {'credentials:scope': 'client'}, {'credentials:scope': 'wx'}],
         apply: 'permit-overrides',
         policies: [
             {
                 target: [{'credentials:scope': 'client'}],
+                apply: 'permit-overrides',
+                rules: [
+                    {
+                        effect: 'permit'
+                    }
+                ]
+            },
+            {
+                target: [{'credentials:scope': 'wx'}],
                 apply: 'permit-overrides',
                 rules: [
                     {
