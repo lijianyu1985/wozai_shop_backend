@@ -16,8 +16,8 @@
     }
   },
   "wxConfig":{
-    "appId":"wxed4d912ec5e2ece7",
-    "appSecret":"b021a89b33e2a7e976b27b00d8634c4b",
+    "appId":"wx0b5f8a7bb0149b4e",
+    "appSecret":"0a265fafa2ec7f93ff40ae385ede4fa0",
     "appCode2SessionUrl":"https://api.weixin.qq.com/sns/jscode2session",
     "mchId":"1305638280",
     "partnerKey":"78965412789654127896541278965412"
