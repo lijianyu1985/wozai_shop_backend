@@ -22,12 +22,14 @@ export default [
                 payload: Joi.object().keys({
                     name: Joi.string().required(),
                     brand: Joi.string().required(),
+                    weight: Joi.number().allow(null),
                     categoryId: Joi.string().required(),
                     code: Joi.string().allow(null).allow(''),
                     photos: Joi.array(),
                     coverPhotos: Joi.array(),
                     description: Joi.string().required(),
-                    subdivide: Joi.array()
+                    subdivide: Joi.array(),
+                    defaultSubdivide: Joi.boolean()
                 }).label('CreateCommodity')
             }
         }
@@ -47,12 +49,14 @@ export default [
                     id: jois.CommonJoi.id,
                     name: Joi.string().required(),
                     brand: Joi.string().required(),
+                    weight: Joi.number().allow(null),
                     categoryId: Joi.string().required(),
                     code: Joi.string().allow(null).allow(''),
                     photos: Joi.array(),
                     coverPhotos: Joi.array(),
                     description: Joi.string().required(),
-                    subdivide: Joi.array()
+                    subdivide: Joi.array(),
+                    defaultSubdivide: Joi.boolean()
                 }).label('UpdateCommodity')
             }
         }

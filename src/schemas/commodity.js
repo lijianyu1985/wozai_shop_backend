@@ -46,6 +46,9 @@ const Commodity = new Schema(
       //详情
       type: Schema.Types.String,
     },
+    weight: {
+      type: Schema.Types.Number,
+    },
     status: {
       type: Schema.Types.String,
       default: commodityStatusMap.preOnline,
@@ -53,6 +56,10 @@ const Commodity = new Schema(
     },
     copyFrom: {
       type: Schema.Types.String,
+    },
+    defaultSubdivide: {
+      type: Schema.Types.Boolean,
+      default: false,
     },
     subdivide: [
       {

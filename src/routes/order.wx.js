@@ -113,6 +113,7 @@ export default [
                         city: Joi.string().required(),
                         county: Joi.string().required(),
                         areaValue: Joi.string().required(),
+                        zipCode: Joi.string().allow(null),
                         name: Joi.string().required(),
                         phone: Joi.string().required(),
                         address: Joi.string().required(),
@@ -154,6 +155,18 @@ export default [
                     areaValue: Joi.string().required(),
                 }).label('/Wx/Order/CalculateShippingFee')
             }
+        }
+    },
+    {
+        method: 'GET',
+        path: '/Wx/Order/HasCreatedOrder',
+        handler: handlers.hasCreatedOrder,
+        config: {
+            description: '检查是否有已创建的订单',
+            tags: ['api', 'admin'],
+            auth: {
+              scope: "wx",
+            },
         }
     }
 ];

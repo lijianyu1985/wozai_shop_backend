@@ -3,57 +3,63 @@
 
 // joi guide
 // https://github.com/hapijs/joi/blob/v14.3.0/API.md
-import rbacPolicy from '../utils/auth/rbacPolicy';
+import handlers from '../handlers/order';
+import Joi from '@hapi/joi';
+import jois from '../utils/jois';
 
 export default [
     {
-        method: 'GET',
-        path: '/Order/Find',
-        handler: function (request, h) {
-            return 'images';
-        },
+        method: 'POST',
+        path: '/Order/Cancel',
+        handler: handlers.cancel,
         config: {
-            description: '查询',
-            tags: ['api', 'admin'],
+            description: '取消订单',
+            tags: ['api', 'order'],
             auth: {
-                scope: ['super_admin']
+                scope: ['admin']
             },
-            plugins: {
-                rbac: rbacPolicy.admin
+            validate: {
+                payload: Joi.object().keys({
+                    id: jois.CommonJoi.id,
+                }).label('/Order/Cancel')
             }
         }
     },
     {
         method: 'POST',
-        path: '/Order/Create',
-        handler: function (request, h) {
-            return 'images';
-        },
+        path: '/Order/CreateShipping',
+        handler: handlers.createShipping,
         config: {
-            description: '创建',
-            tags: ['api', 'admin']
-        }
-    },
-    {
-        method: 'POST',
-        path: '/Order/Update',
-        handler: function (request, h) {
-            return 'images';
-        },
-        config: {
-            description: '更新',
-            tags: ['api', 'admin']
-        }
-    },
-    {
-        method: 'DELETE',
-        path: '/Order/Delete',
-        handler: function (request, h) {
-            return 'images';
-        },
-        config: {
-            description: '删除',
-            tags: ['api', 'admin']
+            description: '创建快递',
+            tags: ['api', 'order'],
+            auth: {
+                scope: ['admin']
+            },
+            validate: {
+                payload: Joi.object().keys({
+                    id: jois.CommonJoi.id,
+                    sender: Joi.object().keys({
+                        province: Joi.string().allow(null),
+                        city: Joi.string().allow(null),
+                        county: Joi.string().allow(null),
+                        zipCode: Joi.string().allow(null),
+                        name: Joi.string().allow(null),
+                        phone: Joi.string().allow(null),
+                        address: Joi.string().allow(null),
+                    }),
+                    receiver: Joi.object().keys({
+                        province: Joi.string().allow(null),
+                        city: Joi.string().allow(null),
+                        county: Joi.string().allow(null),
+                        zipCode: Joi.string().allow(null),
+                        name: Joi.string().allow(null),
+                        phone: Joi.string().allow(null),
+                        address: Joi.string().allow(null),
+                    }),
+                    count: Joi.number().allow(null),
+                    weight: Joi.number().allow(null),
+                }).label('/Order/CreateShipping')
+            }
         }
     },
     {

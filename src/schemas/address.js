@@ -23,6 +23,9 @@ const Address = new Schema({
     areaValue:{
         type: Schema.Types.String
     },
+    zipCode: {
+      type: Schema.Types.String,
+    },
     userId:{
         type: Schema.Types.String
     },

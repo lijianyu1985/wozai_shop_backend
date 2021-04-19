@@ -12,6 +12,8 @@ import Common from "./routes/common";
 import Commodity from "./routes/commodity";
 import CommodityWx from "./routes/commodity.wx";
 import OrderWx from "./routes/order.wx";
+import Order from "./routes/order";
+import System from "./routes/system";
 import MainWx from "./routes/main.wx";
 import Joi from "@hapi/joi";
 import { configAuth } from "./utils/auth/auth";
@@ -121,8 +123,10 @@ const init = async () => {
   server.route(Commodity);
   server.route(CommodityWx);
   server.route(OrderWx);
+  server.route(Order);
+  server.route(System);
   server.route(MainWx);
-
+  
   server.route({
     method: "GET",
     path: "/resources/{param*}",

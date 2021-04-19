@@ -151,6 +151,10 @@ export default {
         wxPrePayException:{
             code: '1304',
             msg: '微信预支付异常'
+        },
+        cantCancelOrder:{
+            code: '1305',
+            msg: '订单当前不可取消'
         }
     }
 };

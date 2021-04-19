@@ -3,7 +3,35 @@
 
 const Schema = require('mongoose').Schema;
 const orderStatus = require("../utils/const").orderStatus;
+const shippingStatus = require("../utils/const").shippingStatus;
 const orderStatusMap = require("../utils/const").orderStatusMap;
+
+
+const OrderStatus = new Schema({
+    name: {
+        type: Schema.Types.String,
+        default: orderStatusMap.Created,
+        enum: [...orderStatus],
+    },
+    comment: {
+        type: Schema.Types.String,
+        default: ''
+    },
+    operatorType: {
+        type: Schema.Types.String,
+        required: true,
+        default: '',
+        enum: ['client', 'admin', 'staff', 'system']
+    },
+    operatorId: {
+        type: Schema.Types.String,
+        required: true
+    },
+    operateAt: {
+        type: Schema.Types.Date,
+        default: Date.now
+    }
+});
 
 const CommodityItem = new Schema({
     commodity:{
@@ -18,6 +46,58 @@ const CommodityItem = new Schema({
     }
 });
 
+const ShippingItem = new Schema({
+    status:{
+        type: Schema.Types.String,
+    },
+    timestamp:{
+        type: Schema.Types.Date,
+    },
+});
+
+const Operator = new Schema({
+    id:{
+        type: Schema.Types.String,
+    },
+    name:{
+        type: Schema.Types.String,
+    },
+});
+
+const Shipping = new Schema({
+    status:{
+        type: Schema.Types.String,
+        enum: [...shippingStatus],
+        default: shippingStatus.Created
+    },
+    number:{
+        type: Schema.Types.String,
+    },
+    company:{
+        type: Schema.Types.String,
+    },
+    sender:{
+        type: Schema.Types.Mixed,
+    },
+    receiver:{
+        type: Schema.Types.Mixed,
+    },
+    count:{
+        type: Schema.Types.Number,
+    },
+    weight:{
+        type: Schema.Types.Number,
+    },
+    timestamp: {
+        type: Schema.Types.Date,
+        default: Date.now(),
+    },
+    creator: {
+        type: Operator,
+    },
+    items:[ShippingItem],
+});
+
 const Order = new Schema({
     orderNumber: {//订单号
         type: Schema.Types.String,
@@ -30,7 +110,7 @@ const Order = new Schema({
     userId: {
         type: Schema.Types.String
     },
-    touchedTime: {
+    touchedTimestamp: {
         type: Schema.Types.Date,
         default: Date.now(),
     },
@@ -55,15 +135,19 @@ const Order = new Schema({
         }
     },
     status: {
-      type: Schema.Types.String,
-      default: orderStatusMap.Created,
-      enum: [...orderStatus],
+        current: {
+            type: OrderStatus
+        },
+        history: [OrderStatus]
     },
     statusHistory: {
         type: Schema.Types.String
     },
     description: {
         type: Schema.Types.String
+    },
+    shipping: {
+        type: Shipping
     },
     archived: {
         type: Schema.Types.Boolean,

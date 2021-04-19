@@ -63,16 +63,81 @@ async function createSkus(Sku, commodityId, code, subdivide) {
   return skuIds;
 }
 
+function subdividesInSubdivides(subdivide, subdivides) {
+  return subdivides.some(
+    (x) => x.kind === subdivide.kind && x.value === subdivide.value
+  );
+}
+
+function compareSubdivides(subdividesA, subdividesB) {
+  return (
+    subdividesA.every((x) => subdividesInSubdivides(x, subdividesB)) &&
+    subdividesB.every((x) => subdividesInSubdivides(x, subdividesA))
+  );
+}
+
+function itemToSubdivide(item) {
+  const kindList = lodash.keys(item);
+  const skuSubdivide = [];
+  kindList.forEach((kind) => {
+    skuSubdivide.push({
+      kind,
+      value: item[kind],
+    });
+  });
+  return skuSubdivide;
+}
+
+//插入或者删除
+async function updateSkusForCommodity(Sku, commodityId, code, subdivide) {
+  const currentSkus = await Sku.find({ commodityId });
+  const skus = buildSkus(subdivide);
+  const skuIds = [];
+  //删除找不到的skus
+  const oldSkusNotFound = currentSkus.filter((x) => {
+    return !skus.some((y) =>
+      compareSubdivides(itemToSubdivide(y), x.subdivide)
+    );
+  });
+  await Sku.deleteMany({
+    commodityId,
+    _id: { $in: oldSkusNotFound.map((x) => x._id) },
+  });
+  //插入不存在的skus
+  const newSkusNotFound = skus.filter(
+    (x) =>
+      !currentSkus.some((y) =>
+        compareSubdivides(itemToSubdivide(x), y.subdivide)
+      )
+  );
+  await Promise.all(
+    newSkusNotFound.map(async (item) => {
+      const skuSubdivide = itemToSubdivide(item);
+      const sku = new Sku({
+        commodityId,
+        code,
+        subdivide: skuSubdivide,
+      });
+      await sku.save();
+      skuIds.push(sku._id);
+    })
+  );
+  const currentExistingSkus = await Sku.find({ commodityId }, "_id");
+  return currentExistingSkus.map((x) => x._id);
+}
+
 async function create(request, h) {
   const {
     name,
     code,
     brand,
+    weight,
     categoryId,
     photos,
     coverPhotos,
     description,
     subdivide,
+    defaultSubdivide,
   } = request.payload;
   const Commodity = request.mongo.models.Commodity;
   const Sku = request.mongo.models.Sku;
@@ -105,11 +170,13 @@ async function create(request, h) {
     name,
     code: fixedCode,
     brand,
+    weight,
     categoryId,
     photos,
     coverPhotos,
     description,
     subdivide,
+    defaultSubdivide,
   });
   await model.save();
   if (subdivide && subdivide.length) {
@@ -127,11 +194,13 @@ async function updateBasic(request, h) {
     id,
     name,
     brand,
+    weight,
     categoryId,
     photos,
     coverPhotos,
     description,
     subdivide,
+    defaultSubdivide,
   } = request.payload;
   const Commodity = request.mongo.models.Commodity;
   const Sku = request.mongo.models.Sku;
@@ -152,16 +221,28 @@ async function updateBasic(request, h) {
 
   const model = await Commodity.findByIdAndUpdate(
     id,
-    { name, brand, categoryId, photos, coverPhotos, description, subdivide },
+    {
+      name,
+      brand,
+      weight,
+      categoryId,
+      photos,
+      coverPhotos,
+      description,
+      subdivide,
+      defaultSubdivide,
+    },
     { new: true }
   );
 
-  // clear skus
-  await Sku.deleteMany({
-    commodityId: id,
-  });
   if (subdivide && subdivide.length) {
-    const skus = await createSkus(Sku, id, model.code, subdivide);
+    //TODO: update skus
+    const skus = await updateSkusForCommodity(
+      Sku,
+      model._id,
+      model.code,
+      subdivide
+    );
     await Commodity.findByIdAndUpdate(id, { skus }, { new: true });
   }
   return {
@@ -176,7 +257,7 @@ async function skuDetails(request, h) {
   const Sku = request.mongo.models.Sku;
   const commodity = await Commodity.findById(
     id,
-    "_id name code subdivide status archived"
+    "_id name code subdivide status archived defaultSubdivide"
   );
   const skus = await Sku.find({ commodityId: id });
   return {
@@ -210,7 +291,7 @@ async function updateSkus(request, h) {
     await Promise.all(
       skus.map(async (item) => {
         const currentSku = await Sku.findById(item._id);
-        const update = {archived: item.archived};
+        const update = { archived: item.archived };
         if (
           item.amountVariation !== 0 &&
           item.amountVariation !== null &&
@@ -328,10 +409,12 @@ async function copy(request, h) {
     name: commodity.name,
     code,
     brand: commodity.brand,
+    weight: commodity.weight,
     categoryId: commodity.categoryId,
     photos: commodity.photos,
     coverPhotos: commodity.coverPhotos,
     description: commodity.description,
+    defaultSubdivide: commodity.defaultSubdivide,
     subdivide: commodity.subdivide,
   });
   await model.save();
@@ -358,7 +441,7 @@ async function wxDetails(request, h) {
   const { id } = request.query;
   const Commodity = request.mongo.models.Commodity;
   const Sku = request.mongo.models.Sku;
-  const commodity = await Commodity.findById(id);
+  const commodity = await Commodity.findById(id).populate("skus");
   const skus = await Sku.find({ commodityId: id });
   const maxPrice = lodash.maxBy(skus, (s) => {
     return s.price;
@@ -367,10 +450,22 @@ async function wxDetails(request, h) {
     return s.price;
   }).price;
   const priceRange =
-    minPrice === maxPrice ? maxPrice+"" : minPrice + " - " + maxPrice;
+    minPrice === maxPrice ? maxPrice + "" : minPrice + " - " + maxPrice;
   return {
     success: true,
-    commodity,
+    commodity: {
+      id: commodity._id,
+      name: commodity.name,
+      photo: commodity.coverPhotos && commodity.coverPhotos.length && commodity.coverPhotos[0],
+      coverPhotos: commodity.coverPhotos,
+      photos: commodity.photos,
+      subdivide: commodity.subdivide,
+      defaultSubdivide: commodity.defaultSubdivide,
+      skus: filterSkus(commodity.skus),
+      priceRange: getPriceRange(filterSkus(commodity.skus)),
+      weight: commodity.weight,
+      description: commodity.description,
+    },
     skus,
     priceRange,
   };
@@ -407,30 +502,30 @@ async function categoriesAndFirstCategoryCommodities(request, h) {
   };
 }
 
+const getPriceRange = (skus) => {
+  if (!skus || !skus.length) {
+    return "0";
+  }
+  const maxPrice = lodash.maxBy(skus, (s) => {
+    return s.price;
+  }).price;
+  const minPrice = lodash.minBy(skus, (s) => {
+    return s.price;
+  }).price;
+  return minPrice === maxPrice ? maxPrice : minPrice + " - " + maxPrice;
+};
+const filterSkus = (skus) => {
+  return skus.filter((x) => x.amount > 0);
+};
+
 async function commoditiesByCategory(request, h) {
   const { categoryId } = request.query;
   const Commodity = request.mongo.models.Commodity;
   const commodities = await Commodity.find(
     { categoryId, archived: false }, // status: "已上线" },
-    "_id name coverPhotos subdivide skus"
+    "_id name weight coverPhotos subdivide skus defaultSubdivide"
   ).populate("skus");
 
-  const getPriceRange = (skus) => {
-    if (!skus || !skus.length) {
-      return "0";
-    }
-    const maxPrice = lodash.maxBy(skus, (s) => {
-      return s.price;
-    }).price;
-    const minPrice = lodash.minBy(skus, (s) => {
-      return s.price;
-    }).price;
-    return minPrice === maxPrice ? maxPrice : minPrice + " - " + maxPrice;
-  };
-  const filterSkus = (skus) => {
-    return skus.filter(x=>!x.archived);
-  };
-  
   return {
     success: true,
     commodities: (commodities || []).map((x) => ({
@@ -438,8 +533,10 @@ async function commoditiesByCategory(request, h) {
       name: x.name,
       photo: x.coverPhotos && x.coverPhotos.length && x.coverPhotos[0],
       subdivide: x.subdivide,
+      defaultSubdivide: x.defaultSubdivide,
       skus: filterSkus(x.skus),
       priceRange: getPriceRange(filterSkus(x.skus)),
+      weight: x.weight,
     })),
   };
 }

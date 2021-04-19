@@ -83,6 +83,7 @@ export async function validateWx(decoded, request) {
   if (decoded.wxSessionKey !== currentClient.wxSessionKey) {
     return { isValid: false };
   }
+  console.log(currentClient);
   return { isValid: true };
 }
 

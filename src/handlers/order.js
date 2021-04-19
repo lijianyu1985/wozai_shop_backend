@@ -5,8 +5,13 @@ import Number from "../utils/number";
 import systemLogService from "../services/systemLog";
 import mongooseHelpers from "../utils/mongooseHelpers";
 import { calculateShippingFee as shippingFee } from "../utils/settings";
-import { orderStatusMap } from "../utils/const";
+import {
+  orderStatusMap,
+  orderStatusCancelable,
+  shippingStatus,
+} from "../utils/const";
 import { unifiedOrder } from "../utils/wxPay";
+import { createExpress, queryHistory } from "../utils/shipping";
 
 async function wxCreate(request, h) {
   const { /*address,*/ commodityItems } = request.payload;
@@ -86,7 +91,11 @@ async function wxCreate(request, h) {
           8
         ),
       ].join("");
-
+      const status = {
+        name: orderStatusMap.Created,
+        operatorType: "client",
+        operatorId: userId,
+      };
       const newOrder = {
         orderNumber,
         userId: userId,
@@ -97,8 +106,18 @@ async function wxCreate(request, h) {
           //shippingFee,
           total,
         },
+        status: {
+          current: status,
+          history: [],
+        },
         description: "",
       };
+
+      await commonService.updateByQuery(
+        Order,
+        { "status.current.name": orderStatusMap.Created },
+        { archived: true }
+      );
 
       const order = await commonService.insert(Order, newOrder);
 
@@ -150,9 +169,10 @@ async function wxUpdateAddressAndDes(request, h) {
     request.auth && request.auth.credentials && request.auth.credentials.id;
   const { Order, Client } = request.mongo.models;
   const order = await commonService.getById(Order, id);
-  const client = await commonService.getById(Client, userId);
+  // const client = await commonService.getById(Client, userId);
   const total = order.rate.commodityCost + shippingFee;
   await commonService.updateById(Order, id, {
+    touchedTimestamp: Date.now(),
     address,
     description,
     "rate.shippingFee": shippingFee,
@@ -198,13 +218,29 @@ async function wxGet(request, h) {
   return { success: true, order };
 }
 
+async function hasCreatedOrder(request, h) {
+  const { Order } = request.mongo.models;
+  const userId =
+    request.auth && request.auth.credentials && request.auth.credentials.id;
+  const order = await commonService.getByQuery(
+    Order,
+    { userId, "status.current.name": orderStatusMap.Created, archived: false },
+    null,
+    { sort: "createdAt" }
+  );
+  if (!order || !order._id) {
+    return { success: true, hasCreatedOrder: false };
+  }
+  return { success: true, hasCreatedOrder: true, order };
+}
+
 async function wxRetryLatestCeated(request, h) {
   const { Order } = request.mongo.models;
   const userId =
     request.auth && request.auth.credentials && request.auth.credentials.id;
   const order = await commonService.getByQuery(
     Order,
-    { userId, status: orderStatusMap.Created },
+    { userId, "status.current.name": orderStatusMap.Created },
     null,
     { sort: "createdAt" }
   );
@@ -212,7 +248,7 @@ async function wxRetryLatestCeated(request, h) {
     return { success: false, error: errors.order.noCreatedOrderBeFound };
   }
   await commonService.updateById(Order, order._id, {
-    touchedTime: Date.now(),
+    touchedTimestamp: Date.now(),
   });
   return { success: true, order };
 }
@@ -230,9 +266,9 @@ async function page(request, h) {
   const { Order } = request.mongo.models;
   const userId =
     request.auth && request.auth.credentials && request.auth.credentials.id;
-  const queryObject = { userId };
+  const queryObject = { userId, archived: false };
   if (status) {
-    queryObject.status = status;
+    queryObject["status.current.name"] = status;
   }
   const total = await Order.count(queryObject);
   const list = await Order.find(queryObject)
@@ -248,6 +284,62 @@ async function page(request, h) {
   };
 }
 
+async function cancel(request, h) {
+  const { id } = request.payload;
+  const userId =
+    request.auth && request.auth.credentials && request.auth.credentials.id;
+  const { Order } = request.mongo.models;
+  const order = await commonService.getById(Order, id);
+  if (orderStatusCancelable.indexOf(order.status.current.name) < 0) {
+    return {
+      success: false,
+      error: errors.order.cantCancelOrder,
+    };
+  }
+  order.status.history.push(Object.assign({}, order.status.current));
+  order.status.current = {
+    name: orderStatusMap.Canceled,
+    comment: "",
+    operatorType: "admin",
+    operatorId: userId,
+  };
+  const newOrder = await Order.findByIdAndUpdate(id, order, { new: true });
+  return {
+    success: true,
+    order: newOrder,
+  };
+}
+
+async function createShipping(request, h) {
+  const { id, sender, receiver, count, weight } = request.payload;
+  const { Order, Admin } = request.mongo.models;
+  const userId =
+    request.auth && request.auth.credentials && request.auth.credentials.id;
+  const admin = await commonService.getById(userId);
+  //TODO: 调用API生成订单号码
+  //TODO: 修改订单状态，快递中
+  const expressResult = await createExpress(sender, receiver, count, weight);
+  await commonService.updateById(Order, id, {
+    shipping: {
+      sender,
+      receiver,
+      count,
+      weight,
+      status: shippingStatus.Created,
+      number: expressResult.number,
+      company: expressResult.company,
+      creator: {
+        id: userId,
+        name: admin.name,
+      },
+    },
+  });
+
+  return {
+    success: true,
+  };
+}
+
 export default {
   wxCreate,
   wxGet,
@@ -255,4 +347,7 @@ export default {
   calculateShippingFee,
   wxUpdateAddressAndDes,
   page,
+  hasCreatedOrder,
+  cancel,
+  createShipping,
 };
