@@ -18,7 +18,7 @@ const Commodity = new Schema(
       trim: true,
       required: true,
     },
-    category: {
+    categoryId: {
       //分类
       type: Schema.Types.ObjectId,
       ref: "category",
