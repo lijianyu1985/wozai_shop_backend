@@ -21,6 +21,11 @@ import { policy } from "./utils/auth/rbacPolicy";
 import https from "https";
 import fs from "fs";
 import Path from "path";
+import Jobs from './utils/jobs';
+import startup from './utils/startup';
+
+Jobs.startAll();
+startup.startAll();
 
 const connectionConfig = Config.connectConfig;
 

@@ -47,5 +47,24 @@ export default [
                 }).label('CommoditiesByCategory')
             }
         }
+    },
+    {
+        method: 'GET',
+        path: '/Wx/Commodity/Search',
+        handler: handlers.search,
+        config: {
+            description: '搜索产品',
+            tags: ['api', 'commodity'],
+            auth: false,
+            validate: {
+                query: Joi.object().keys({
+                    searchTerm: Joi.string().trim(),
+                    sortBy: Joi.string().trim(),
+                    order: Joi.number(),
+                    page: Joi.number().min(0).allow(null),
+                    size: Joi.number().min(1).allow(null)
+                }).label('Search')
+            }
+        }
     }
 ];

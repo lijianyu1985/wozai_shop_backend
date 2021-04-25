@@ -12,12 +12,13 @@ import {
 } from "../utils/const";
 import { unifiedOrder } from "../utils/wxPay";
 import { createExpress, queryHistory } from "../utils/shipping";
+import common from "../services/common";
 
 async function wxCreate(request, h) {
   const { /*address,*/ commodityItems } = request.payload;
   const userId =
     request.auth && request.auth.credentials && request.auth.credentials.id;
-  const { Systemlog, Counter } = request.mongo.models;
+  const { Systemlog, Counter, Client } = request.mongo.models;
   // 检查库存
   const skuNotEnoughList = [];
   await Promise.all(
@@ -91,10 +92,14 @@ async function wxCreate(request, h) {
           8
         ),
       ].join("");
+      const client = await commonService.getById(Client, userId);
       const status = {
         name: orderStatusMap.Created,
         operatorType: "client",
-        operatorId: userId,
+        operatorId: {
+          id: userId,
+          name: client.wxNickName,
+        },
       };
       const newOrder = {
         orderNumber,
@@ -170,7 +175,8 @@ async function wxUpdateAddressAndDes(request, h) {
   const { Order, Client } = request.mongo.models;
   const order = await commonService.getById(Order, id);
   // const client = await commonService.getById(Client, userId);
-  const total = order.rate.commodityCost + shippingFee;
+  const total =
+    order.rate.commodityCost + shippingFee - (order.rate.discount || 0);
   await commonService.updateById(Order, id, {
     touchedTimestamp: Date.now(),
     address,
@@ -208,10 +214,10 @@ async function wxUpdateAddressAndDes(request, h) {
 }
 
 async function wxGet(request, h) {
-  const { orderId } = request.payload;
+  const { id } = request.query;
   const { Order } = request.mongo.models;
 
-  const order = await commonService.getById(Order, orderId);
+  const order = await commonService.getById(Order, id);
   if (!order || !order._id) {
     return { success: false, error: errors.order.noOrderBeFound };
   }
@@ -288,8 +294,9 @@ async function cancel(request, h) {
   const { id } = request.payload;
   const userId =
     request.auth && request.auth.credentials && request.auth.credentials.id;
-  const { Order } = request.mongo.models;
+  const { Order, Admin, Sku, Systemlog } = request.mongo.models;
   const order = await commonService.getById(Order, id);
+  const admin = await common.getById(Admin, userId);
   if (orderStatusCancelable.indexOf(order.status.current.name) < 0) {
     return {
       success: false,
@@ -301,9 +308,25 @@ async function cancel(request, h) {
     name: orderStatusMap.Canceled,
     comment: "",
     operatorType: "admin",
-    operatorId: userId,
+    operatorId: {
+      id: userId,
+      name: admin.name,
+    },
   };
   const newOrder = await Order.findByIdAndUpdate(id, order, { new: true });
+  await Promise.all(
+    (newOrder.commodityItems || []).map(async (commodityItem) => {
+      try {
+        await Sku.findOneAndUpdate(
+          { _id: commodityItem.sku._id },
+          { $inc: { amount: commodityItem.count } },
+          { new: true, upsert: true }
+        );
+      } catch (err) {
+        await systemLogService.insertSystemLog(Systemlog, "order.cancel", err);
+      }
+    })
+  );
   return {
     success: true,
     order: newOrder,
@@ -340,6 +363,38 @@ async function createShipping(request, h) {
   };
 }
 
+async function applyDiscount(request, h) {
+  const { id, discount } = request.payload;
+  const userId =
+    request.auth && request.auth.credentials && request.auth.credentials.id;
+  const { Order, Admin } = request.mongo.models;
+  const order = await commonService.getById(Order, id);
+  const admin = await commonService.getById(Admin, userId);
+  const total = order.rate.commodityCost + order.rate.shippingFee - (discount || 0);
+  if(total < 0){
+    return {
+      success: false,
+      error: errors.order.discountCantGreaterThanTotal,
+    };
+  }
+  await commonService.updateById(
+    Order,
+    id,
+    {
+      touchedTimestamp: Date.now(),
+      "rate.total": total,
+      "rate.discount": discount,
+      discountGiver:{
+        id: userId,
+        name: admin.name,
+      }
+    },
+    { new: true }
+  );
+  return {
+    success: true,
+  };
+}
 export default {
   wxCreate,
   wxGet,
@@ -350,4 +405,5 @@ export default {
   hasCreatedOrder,
   cancel,
   createShipping,
+  applyDiscount,
 };

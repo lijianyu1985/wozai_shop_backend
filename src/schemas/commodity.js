@@ -18,11 +18,23 @@ const Commodity = new Schema(
       trim: true,
       required: true,
     },
-    categoryId: {
-      //分类Id
-      type: Schema.Types.String,
-      trim: true,
-      required: true,
+    category: {
+      //分类
+      type: Schema.Types.ObjectId,
+      ref: "category",
+    },
+    minPrice: {
+        type: Schema.Types.Number,
+        min: 0,
+        default: 0
+    },
+    maxPrice: {
+        type: Schema.Types.Number,
+        min: 0,
+        default: 0
+    },
+    priceRange: {
+        type: Schema.Types.String,
     },
     photos: {
       //照片

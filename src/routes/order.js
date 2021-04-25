@@ -72,5 +72,23 @@ export default [
             description: '查询单个',
             tags: ['api', 'admin']
         }
-    }
+    },
+    {
+        method: 'POST',
+        path: '/Order/ApplyDiscount',
+        handler: handlers.applyDiscount,
+        config: {
+            description: '给与优惠',
+            tags: ['api', 'order'],
+            auth: {
+                scope: ['admin']
+            },
+            validate: {
+                payload: Joi.object().keys({
+                    id: jois.CommonJoi.id,
+                    discount: Joi.number().allow(null),
+                }).label('/Order/ApplyDiscount')
+            }
+        }
+    },
 ];

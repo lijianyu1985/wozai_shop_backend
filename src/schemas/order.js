@@ -6,6 +6,14 @@ const orderStatus = require("../utils/const").orderStatus;
 const shippingStatus = require("../utils/const").shippingStatus;
 const orderStatusMap = require("../utils/const").orderStatusMap;
 
+const Operator = new Schema({
+    id:{
+        type: Schema.Types.String,
+    },
+    name:{
+        type: Schema.Types.String,
+    },
+});
 
 const OrderStatus = new Schema({
     name: {
@@ -23,9 +31,8 @@ const OrderStatus = new Schema({
         default: '',
         enum: ['client', 'admin', 'staff', 'system']
     },
-    operatorId: {
-        type: Schema.Types.String,
-        required: true
+    operator: {
+        type: Operator,
     },
     operateAt: {
         type: Schema.Types.Date,
@@ -55,14 +62,6 @@ const ShippingItem = new Schema({
     },
 });
 
-const Operator = new Schema({
-    id:{
-        type: Schema.Types.String,
-    },
-    name:{
-        type: Schema.Types.String,
-    },
-});
 
 const Shipping = new Schema({
     status:{
@@ -132,6 +131,9 @@ const Order = new Schema({
         },
         total: {
             type: Schema.Types.Number,
+        },
+        discountGiver: {
+            type: Operator,
         }
     },
     status: {

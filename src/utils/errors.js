@@ -155,6 +155,10 @@ export default {
         cantCancelOrder:{
             code: '1305',
             msg: '订单当前不可取消'
+        },
+        discountCantGreaterThanTotal:{
+            code: '1306',
+            msg: '优惠不能超过订单金额'
         }
     }
 };

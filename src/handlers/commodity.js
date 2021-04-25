@@ -177,11 +177,16 @@ async function create(request, h) {
     description,
     subdivide,
     defaultSubdivide,
+    price: 0,
   });
   await model.save();
   if (subdivide && subdivide.length) {
     const skus = await createSkus(Sku, model._id, fixedCode, subdivide);
-    await Commodity.findByIdAndUpdate(model._id, { skus }, { new: true });
+    await Commodity.findByIdAndUpdate(
+      model._id,
+      { skus, price },
+      { new: true }
+    );
   }
   return {
     success: true,
@@ -310,6 +315,22 @@ async function updateSkus(request, h) {
       })
     );
   }
+
+  const existingSkus = await commonSerivice.find(Sku, { commodityId: id });
+  const maxPrice = lodash.maxBy(existingSkus, (s) => {
+    return s.price;
+  }).price;
+  const minPrice = lodash.minBy(existingSkus, (s) => {
+    return s.price;
+  }).price;
+  const priceRange =
+    minPrice === maxPrice ? maxPrice + "" : minPrice + " - " + maxPrice;
+
+  await commonSerivice.updateById(Commodity, id, {
+    priceRange,
+    minPrice,
+    maxPrice,
+  });
 
   return {
     success: true,
@@ -443,31 +464,26 @@ async function wxDetails(request, h) {
   const Sku = request.mongo.models.Sku;
   const commodity = await Commodity.findById(id).populate("skus");
   const skus = await Sku.find({ commodityId: id });
-  const maxPrice = lodash.maxBy(skus, (s) => {
-    return s.price;
-  }).price;
-  const minPrice = lodash.minBy(skus, (s) => {
-    return s.price;
-  }).price;
-  const priceRange =
-    minPrice === maxPrice ? maxPrice + "" : minPrice + " - " + maxPrice;
   return {
     success: true,
     commodity: {
       id: commodity._id,
       name: commodity.name,
-      photo: commodity.coverPhotos && commodity.coverPhotos.length && commodity.coverPhotos[0],
+      photo:
+        commodity.coverPhotos &&
+        commodity.coverPhotos.length &&
+        commodity.coverPhotos[0],
       coverPhotos: commodity.coverPhotos,
       photos: commodity.photos,
       subdivide: commodity.subdivide,
       defaultSubdivide: commodity.defaultSubdivide,
       skus: filterSkus(commodity.skus),
-      priceRange: getPriceRange(filterSkus(commodity.skus)),
+      priceRange: commodity.priceRange,
       weight: commodity.weight,
       description: commodity.description,
     },
     skus,
-    priceRange,
+    priceRange: commodity.priceRange,
   };
 }
 
@@ -522,8 +538,8 @@ async function commoditiesByCategory(request, h) {
   const { categoryId } = request.query;
   const Commodity = request.mongo.models.Commodity;
   const commodities = await Commodity.find(
-    { categoryId, archived: false }, // status: "已上线" },
-    "_id name weight coverPhotos subdivide skus defaultSubdivide"
+    { categoryId: categoryId.toObjectId(), archived: false }, // status: "已上线" },
+    "_id name weight coverPhotos subdivide skus defaultSubdivide priceRange"
   ).populate("skus");
 
   return {
@@ -535,9 +551,113 @@ async function commoditiesByCategory(request, h) {
       subdivide: x.subdivide,
       defaultSubdivide: x.defaultSubdivide,
       skus: filterSkus(x.skus),
-      priceRange: getPriceRange(filterSkus(x.skus)),
+      priceRange: x.priceRange,
       weight: x.weight,
     })),
+  };
+}
+
+async function search(request, h) {
+  const { searchTerm, sortBy, order, page = 1, size = 10 } = request.query;
+  //TODO: support other sort fileds
+  const sortField = "maxPrice"; //sortBy === 'price'?'maxPrice': 'maxPrice';
+  const Commodity = request.mongo.models.Commodity;
+  const query = {
+    $or: [
+      { name: { $regex: searchTerm, $options: "$i" } },
+      { description: { $regex: searchTerm, $options: "$i" } },
+      { code: searchTerm },
+      { brand: searchTerm },
+      { details: { $elemMatch: { value: searchTerm } } },
+      { subdivide: { $elemMatch: { valueList: searchTerm } } },
+      { "category.name": searchTerm },
+    ],
+    archived: false, // status: "已上线"
+  };
+
+  const count = await Commodity.aggregate([
+    {
+      $lookup: {
+        from: "categories",
+        localField: "categoryId",
+        foreignField: "_id",
+        as: "category",
+      },
+    },
+    {
+      $unwind: "$category",
+    },
+    {
+      $match: query,
+    },
+    {
+      $count: "total",
+    },
+  ]);
+  const commodities = await Commodity.aggregate([
+    {
+      $lookup: {
+        from: "skus",
+        localField: "skus",
+        foreignField: "_id",
+        as: "skus",
+      },
+    },
+    {
+      $lookup: {
+        from: "categories",
+        localField: "categoryId",
+        foreignField: "_id",
+        as: "category",
+      },
+    },
+    { $sort: { [sortField]: order } },
+    {
+      $unwind: "$category",
+    },
+    {
+      $project: {
+        _id: 1,
+        name: 1,
+        weight: 1,
+        coverPhotos: 1,
+        subdivide: 1,
+        skus: 1,
+        defaultSubdivide: 1,
+        archived: 1,
+        priceRange: 1,
+        category: {
+          _id: 1,
+          name: 1,
+        },
+      },
+    },
+    {
+      $match: query,
+    },
+    {
+      $skip:(page - 1) * size
+    },
+    {
+      $limit:size
+    }
+  ]);
+  
+  return {
+    success: true,
+    commodities: (commodities || []).map((x) => ({
+      id: x._id,
+      name: x.name,
+      photo: x.coverPhotos && x.coverPhotos.length && x.coverPhotos[0],
+      subdivide: x.subdivide,
+      defaultSubdivide: x.defaultSubdivide,
+      skus: filterSkus(x.skus),
+      priceRange: x.priceRange,
+      weight: x.weight,
+    })),
+    page,
+    size,
+    total: count[0].total,
   };
 }
 
@@ -555,4 +675,5 @@ export default {
   wxMain,
   categoriesAndFirstCategoryCommodities,
   commoditiesByCategory,
+  search,
 };

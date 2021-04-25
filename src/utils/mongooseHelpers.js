@@ -3,6 +3,7 @@ import Config from 'getconfig';
 import OrderSchema from '../schemas/order';
 import CommoditySchema from '../schemas/commodity';
 import SkuSchema from '../schemas/sku';
+import SystemlogSchema from '../schemas/systemLog';
 
 const mongoConnectionConfig = Config.mongoConfig.connections[0];
 
@@ -16,6 +17,7 @@ async function createNewConnection(){
     conn.model('Order', OrderSchema);
     conn.model('Commodity', CommoditySchema);
     conn.model('Sku', SkuSchema);
+    conn.model('Systemlog', SystemlogSchema);
     return conn;
 };
 
