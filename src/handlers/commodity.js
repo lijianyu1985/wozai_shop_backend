@@ -184,7 +184,7 @@ async function create(request, h) {
     const skus = await createSkus(Sku, model._id, fixedCode, subdivide);
     await Commodity.findByIdAndUpdate(
       model._id,
-      { skus, price },
+      { skus },
       { new: true }
     );
   }
