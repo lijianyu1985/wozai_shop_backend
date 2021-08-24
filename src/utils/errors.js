@@ -6,6 +6,7 @@ prefix    target
 11        client
 12        commodity
 13        order
+14        shipping
 
 */
 
@@ -160,5 +161,15 @@ export default {
             code: '1306',
             msg: '优惠不能超过订单金额'
         }
-    }
+    },
+    shipping:{
+        callKuaidi100Error:{
+            code: '1401',
+            msg: '调用快递100接口出错'
+        },
+        callKuaidi100GetFalse:{
+            code: '1402',
+            msg: '调用快递100接口返回失败'
+        },
+    },
 };

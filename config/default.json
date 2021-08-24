@@ -22,6 +22,20 @@
     "mchId":"1305638280",
     "partnerKey":"78965412789654127896541278965412"
   },
+  "shippingConfig":{
+    "baseParam":{
+      "cargo": "商品",
+      "partnerId": "1625278686755716",
+      "partnerKey": "fgvaVn8wU",
+      "kuaidicom": "zhongtong",
+      "payType": "SHIPPER",
+      "tempid": "fd884daf015b404ebb4fe535b8376694",
+      "op": 1,
+      "pollCallBackUrl": "http://"
+    },
+    "secret": "2376b2e8dad4483bb66f8251adc71c0e",
+    "key": "TNnNhkqx8760"
+  },
   "connectConfig": {
     "host": "0.0.0.0",
     "port": 12000,

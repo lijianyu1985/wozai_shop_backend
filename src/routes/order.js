@@ -20,7 +20,7 @@ export default [
             },
             validate: {
                 payload: Joi.object().keys({
-                    id: jois.CommonJoi.id,
+                    id: jois.CommonJoi.id
                 }).label('/Order/Cancel')
             }
         }
@@ -45,7 +45,7 @@ export default [
                         zipCode: Joi.string().allow(null),
                         name: Joi.string().allow(null),
                         phone: Joi.string().allow(null),
-                        address: Joi.string().allow(null),
+                        address: Joi.string().allow(null)
                     }),
                     receiver: Joi.object().keys({
                         province: Joi.string().allow(null),
@@ -54,10 +54,10 @@ export default [
                         zipCode: Joi.string().allow(null),
                         name: Joi.string().allow(null),
                         phone: Joi.string().allow(null),
-                        address: Joi.string().allow(null),
+                        address: Joi.string().allow(null)
                     }),
                     count: Joi.number().allow(null),
-                    weight: Joi.number().allow(null),
+                    weight: Joi.number().allow(null)
                 }).label('/Order/CreateShipping')
             }
         }
@@ -86,9 +86,9 @@ export default [
             validate: {
                 payload: Joi.object().keys({
                     id: jois.CommonJoi.id,
-                    discount: Joi.number().allow(null),
+                    discount: Joi.number().allow(null)
                 }).label('/Order/ApplyDiscount')
             }
         }
-    },
+    }
 ];

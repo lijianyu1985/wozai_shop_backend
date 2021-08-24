@@ -17,8 +17,8 @@ export default [
             description: '查询',
             tags: ['api', 'admin'],
             auth: {
-              scope: "wx",
-            },
+                scope: 'wx'
+            }
         }
     },
     {
@@ -29,7 +29,7 @@ export default [
             description: '订单分页查询',
             tags: ['api',  'wx'],
             auth: {
-                scope: [ 'wx']
+                scope: ['wx']
             },
             validate: {
                 query: Joi.object().keys({
@@ -48,11 +48,11 @@ export default [
             description: '创建',
             tags: ['api', 'admin'],
             auth: {
-              scope: "wx",
+                scope: 'wx'
             },
             validate: {
                 options: {
-                  allowUnknown: true
+                    allowUnknown: true
                 },
                 payload: Joi.object().keys({
                     // address: Joi.object().keys({
@@ -70,7 +70,7 @@ export default [
                         commodity: Joi.object().keys({
                             _id: jois.CommonJoi.id,
                             name: Joi.string().required(),
-                            photo: Joi.string().required(),
+                            photo: Joi.string().required()
                         }),
                         sku: Joi.object().keys({
                             _id: jois.CommonJoi.id,
@@ -81,9 +81,9 @@ export default [
                             subdivide:  Joi.array().items(Joi.object().keys({
                                 _id: jois.CommonJoi.id,
                                 kind: Joi.string().required(),
-                                value: Joi.string().required(),
+                                value: Joi.string().required()
                             }))
-                        }),
+                        })
                     }))
                 }).label('/Wx/Order/Create')
             }
@@ -97,11 +97,11 @@ export default [
             description: '修改地址和备注并且预支付',
             tags: ['api', 'admin'],
             auth: {
-              scope: "wx",
+                scope: 'wx'
             },
             validate: {
                 options: {
-                  allowUnknown: true
+                    allowUnknown: true
                 },
                 payload: Joi.object().keys({
                     id: jois.CommonJoi.id,
@@ -116,8 +116,8 @@ export default [
                         zipCode: Joi.string().allow(null),
                         name: Joi.string().required(),
                         phone: Joi.string().required(),
-                        address: Joi.string().required(),
-                    }),
+                        address: Joi.string().required()
+                    })
                 }).label('/Wx/Order/UpdateAddressAndDes')
             }
         }
@@ -130,7 +130,7 @@ export default [
             description: '查询单个',
             tags: ['api', 'admin'],
             auth: {
-              scope: "wx",
+                scope: 'wx'
             },
             validate: {
                 query: Joi.object().keys({
@@ -147,12 +147,12 @@ export default [
             description: '计算快递费',
             tags: ['api', 'admin'],
             auth: {
-              scope: "wx",
+                scope: 'wx'
             },
             validate: {
                 query: Joi.object().keys({
                     orderId: jois.CommonJoi.id,
-                    areaValue: Joi.string().required(),
+                    areaValue: Joi.string().required()
                 }).label('/Wx/Order/CalculateShippingFee')
             }
         }
@@ -165,8 +165,35 @@ export default [
             description: '检查是否有已创建的订单',
             tags: ['api', 'admin'],
             auth: {
-              scope: "wx",
+                scope: 'wx'
+            }
+        }
+    },
+    {
+        method: 'POST',
+        path: '/Wx/Order/PayOrder',
+        handler: handlers.payOrder,
+        config: {
+            description: '支付订单',
+            tags: ['api', 'admin'],
+            auth: {
+                scope: 'wx'
             },
+            validate: {
+                payload: Joi.object().keys({
+                    id: jois.CommonJoi.id
+                }).label('/Wx/Order/PayOrder')
+            }
+        }
+    },
+    {
+        method: 'POST',
+        path: '/Wx/Order/ShippingSubscribe',
+        handler: handlers.shippingSubscribe,
+        config: {
+            description: '快递回调订阅接口',
+            tags: ['api', 'admin'],
+            auth: false
         }
     }
 ];

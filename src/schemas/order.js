@@ -2,24 +2,25 @@
 // https://mongoosejs.com/docs/validation.html
 
 const Schema = require('mongoose').Schema;
-const orderStatus = require("../utils/const").orderStatus;
-const shippingStatus = require("../utils/const").shippingStatus;
-const orderStatusMap = require("../utils/const").orderStatusMap;
+const orderStatus = require('../utils/const').orderStatus;
+const shippingStatus = require('../utils/const').shippingStatus;
+const shippingStatusMap = require('../utils/const').shippingStatusMap;
+const orderStatusMap = require('../utils/const').orderStatusMap;
 
 const Operator = new Schema({
     id:{
-        type: Schema.Types.String,
+        type: Schema.Types.String
     },
     name:{
-        type: Schema.Types.String,
-    },
+        type: Schema.Types.String
+    }
 });
 
 const OrderStatus = new Schema({
     name: {
         type: Schema.Types.String,
         default: orderStatusMap.Created,
-        enum: [...orderStatus],
+        enum: [...orderStatus]
     },
     comment: {
         type: Schema.Types.String,
@@ -32,7 +33,7 @@ const OrderStatus = new Schema({
         enum: ['client', 'admin', 'staff', 'system']
     },
     operator: {
-        type: Operator,
+        type: Operator
     },
     operateAt: {
         type: Schema.Types.Date,
@@ -42,10 +43,10 @@ const OrderStatus = new Schema({
 
 const CommodityItem = new Schema({
     commodity:{
-        type: Schema.Types.Mixed,
+        type: Schema.Types.Mixed
     },
     sku:{
-        type: Schema.Types.Mixed,
+        type: Schema.Types.Mixed
     },
     count:{
         type: Schema.Types.Number,
@@ -53,48 +54,52 @@ const CommodityItem = new Schema({
     }
 });
 
-const ShippingItem = new Schema({
+const ShippingStatus = new Schema({
     status:{
         type: Schema.Types.String,
+        enum: [...shippingStatus],
+        default: shippingStatusMap.Created
     },
     timestamp:{
-        type: Schema.Types.Date,
-    },
+        type: Schema.Types.Date
+    }
 });
+
 
 
 const Shipping = new Schema({
     status:{
-        type: Schema.Types.String,
-        enum: [...shippingStatus],
-        default: shippingStatus.Created
+        type: ShippingStatus
     },
     number:{
-        type: Schema.Types.String,
+        type: Schema.Types.String
     },
     company:{
-        type: Schema.Types.String,
+        type: Schema.Types.String
     },
     sender:{
-        type: Schema.Types.Mixed,
+        type: Schema.Types.Mixed
     },
     receiver:{
-        type: Schema.Types.Mixed,
+        type: Schema.Types.Mixed
     },
     count:{
-        type: Schema.Types.Number,
+        type: Schema.Types.Number
     },
     weight:{
-        type: Schema.Types.Number,
+        type: Schema.Types.Number
     },
     timestamp: {
         type: Schema.Types.Date,
-        default: Date.now(),
+        default: Date.now()
     },
     creator: {
-        type: Operator,
+        type: Operator
     },
-    items:[ShippingItem],
+    statusHistory:[ShippingStatus],
+    printImagePath: {
+        type: Schema.Types.String
+    }
 });
 
 const Order = new Schema({
@@ -104,14 +109,17 @@ const Order = new Schema({
         required: true
     },
     address:{
-        type: Schema.Types.Mixed,
+        type: Schema.Types.Mixed
     },
     userId: {
         type: Schema.Types.String
     },
+    paidTimestamp: {
+        type: Schema.Types.Date
+    },
     touchedTimestamp: {
         type: Schema.Types.Date,
-        default: Date.now(),
+        default: Date.now()
     },
     commodityItems:[CommodityItem],
     rate:{
@@ -130,10 +138,10 @@ const Order = new Schema({
             min: 0
         },
         total: {
-            type: Schema.Types.Number,
+            type: Schema.Types.Number
         },
         discountGiver: {
-            type: Operator,
+            type: Operator
         }
     },
     status: {
