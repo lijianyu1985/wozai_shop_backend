@@ -468,16 +468,16 @@ async function payOrder(request, h) {
 
 async function shippingSubscribe(request, h) {
     //更新订单物流数据
-    console.log(request.payload);
+    const param = JSON.parse(request.payload.param);
     const {Order} = request.mongo.models;
-    const kuaidiNumber = request.payload.lastResult.nu;
+    const kuaidiNumber = param.nu;
     const order = await commonService.getByQuery(Order,{'shipping.number':kuaidiNumber});
     if (order){
         const statusHistory = order.shipping.statusHistory;
-        statusHistory.push(...request.payload.lastResult.data);
+        statusHistory.push(...param.data);
         await commonService.updateById(Order, order.id, {
             'shipping.statusHistory': [...statusHistory],
-            'shipping.status': request.payload.lastResult.data[0]
+            'shipping.status': param.data[0]
         });
     }
     else {
