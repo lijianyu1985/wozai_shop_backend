@@ -57,11 +57,22 @@ const CommodityItem = new Schema({
 const ShippingStatus = new Schema({
     status:{
         type: Schema.Types.String,
-        enum: [...shippingStatus],
         default: shippingStatusMap.Created
     },
-    timestamp:{
+    context:{
+        type: Schema.Types.String
+    },
+    time:{
         type: Schema.Types.Date
+    },
+    ftime:{
+        type: Schema.Types.Date
+    },
+    areaCode:{
+        type: Schema.Types.String
+    },
+    areaName:{
+        type: Schema.Types.String
     }
 });
 

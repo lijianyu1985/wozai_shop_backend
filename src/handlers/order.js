@@ -360,7 +360,7 @@ async function createShipping(request, h) {
         if (savedImage.result) {
             const status = {
                 status: shippingStatusMap.Created,
-                timestamp: Date.now()
+                time: Date.now()
             };
             await commonService.updateById(Order, id, {
                 shipping: {
@@ -468,7 +468,20 @@ async function payOrder(request, h) {
 
 async function shippingSubscribe(request, h) {
     //更新订单物流数据
-    console.log(request.payload);
+    const {Order} = request.mongo.models;
+    const kuaidiNumber = request.payload.lastResult.nu;
+    const order = await commonService.getByQuery(Order,{'shipping.number':kuaidiNumber});
+    if (order){
+        const statusHistory = order.shipping.statusHistory;
+        statusHistory.push([...request.payload.lastResult.data]);
+        await commonService.updateById(Order, order.id, {
+            'shipping.statusHistory': [statusHistory],
+            'shipping.status': request.payload.lastResult.data[0]
+        });
+    }
+    else {
+        console.log(`没有找到对应的订单，快递号:${kuaidiNumber}`);
+    }
 }
 
 export default {
