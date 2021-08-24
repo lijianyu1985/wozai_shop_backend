@@ -193,7 +193,22 @@ export default [
         config: {
             description: '快递回调订阅接口',
             tags: ['api', 'admin'],
-            auth: false
+            auth: false,
+            validate: {
+                options: {
+                    allowUnknown: true
+                },
+                payload: Joi.object().keys({
+                    status: Joi.string().allow('').allow(null),
+                    billstatus: Joi.string().allow('').allow(null),
+                    message: Joi.string().allow('').allow(null),
+                    autoCheck: Joi.string().allow('').allow(null),
+                    comOld: Joi.string().allow('').allow(null),
+                    comNew: Joi.string().allow('').allow(null),
+                    lastResult: Joi.object(),
+                    destResult: Joi.object()
+                }).label('/Wx/Order/UpdateAddressAndDes')
+            }
         }
     }
 ];

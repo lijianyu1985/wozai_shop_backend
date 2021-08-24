@@ -346,7 +346,7 @@ async function createShipping(request, h) {
     const {Order, Admin} = request.mongo.models;
     const userId =
     request.auth && request.auth.credentials && request.auth.credentials.id;
-    const admin = await commonService.getById(Admin, userId);
+    const admin = await commonService.getById(Admin, '5fccd75d6f36b207911abbf9');
     //TODO: 调用API生成快递面单
     //TODO: 修改订单状态，快递中
     const expressResult = await createExpress(sender, receiver, count, weight);
@@ -473,15 +473,18 @@ async function shippingSubscribe(request, h) {
     const order = await commonService.getByQuery(Order,{'shipping.number':kuaidiNumber});
     if (order){
         const statusHistory = order.shipping.statusHistory;
-        statusHistory.push([...request.payload.lastResult.data]);
+        statusHistory.push(...request.payload.lastResult.data);
         await commonService.updateById(Order, order.id, {
-            'shipping.statusHistory': [statusHistory],
+            'shipping.statusHistory': [...statusHistory],
             'shipping.status': request.payload.lastResult.data[0]
         });
     }
     else {
         console.log(`没有找到对应的订单，快递号:${kuaidiNumber}`);
     }
+    return {
+        success: true
+    };
 }
 
 export default {
