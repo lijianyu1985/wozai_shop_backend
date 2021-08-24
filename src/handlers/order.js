@@ -468,6 +468,7 @@ async function payOrder(request, h) {
 
 async function shippingSubscribe(request, h) {
     //更新订单物流数据
+    console.log(request.payload);
     const {Order} = request.mongo.models;
     const kuaidiNumber = request.payload.lastResult.nu;
     const order = await commonService.getByQuery(Order,{'shipping.number':kuaidiNumber});
