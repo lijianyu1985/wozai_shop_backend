@@ -41,7 +41,7 @@
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.15",
     "lodash.capitalize": "^4.2.1",
-    "mammoth": "^1.4.9",
+    "mammoth": "^1.5.1",
     "mongoose": "^5.9.2",
     "nodemon": "^2.0.4",
     "ramda": "^0.27.0",
